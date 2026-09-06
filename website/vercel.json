@@ -1,0 +1,18 @@
+{
+  "name": "rzhk-visual-engineering",
+  "description": "Cinematic visual engineering portfolio landing page",
+  "version": 2,
+  "public": true,
+  "buildCommand": "exit 0",
+  "outputDirectory": ".",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ]
+}
+
