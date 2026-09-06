@@ -1047,11 +1047,13 @@ function releaseLogoDot(p, rect, now) {
   if (reducedMotion.matches || now - lastDotRelease < 55 || releasedDots.length >= 64) return false;
   const x = rect.left + p.x / dpr, y = rect.top + p.y / dpr;
   const inertia = Math.exp(-Math.max(0, now - mouseMomentum.time) / 120) * 0.16;
+  const gyroVX = globalThis._gyroVelocityX || 0;
+  const gyroVY = globalThis._gyroVelocityY || 0;
   releasedDots.push({
     x: x - fieldWidth * 0.5 + (fieldX - 0.5) * 100,
     y: y - fieldHeight * 0.46 + (fieldY - 0.5) * 65,
-    z: 0, vx: p.vx / dpr * 16 + mouseMomentum.x * inertia,
-    vy: p.vy / dpr * 14 + mouseMomentum.y * inertia,
+    z: 0, vx: p.vx / dpr * 16 + mouseMomentum.x * inertia + gyroVX * 0.32,
+    vy: p.vy / dpr * 14 + mouseMomentum.y * inertia + gyroVY * 0.32,
     size: p.size / dpr, age: 0, target: null, joinedAt: null,
     // Each handoff takes a slightly different route before settling into rain.
     chaosSeed: Math.random() * Math.PI * 2,
@@ -1362,8 +1364,11 @@ function renderParticles(now) {
           const f = (1 - d / repelR) * 6 * dpr;
           p.vx += (dxm / d) * f;
           p.vy += (dym / d) * f;
+          const gyroRelease = isTouchDevice && (window._gyroMotion || 0) > 0.12;
+          const releaseDistance = gyroRelease ? 4.5 : 7;
           if (d < repelR * 0.8 && now > (p.releaseAfter || 0)
-              && Math.hypot(p.x - p.ox, p.y - p.oy) > 7 * dpr
+              && (!isTouchDevice || gyroRelease)
+              && Math.hypot(p.x - p.ox, p.y - p.oy) > releaseDistance * dpr
               && releaseLogoDot(p, rect, now)) {
             // Hand off this dot to the rain; its home point quietly reforms.
             p.releasedAt = now;
@@ -1560,7 +1565,7 @@ document.querySelector('.guides').style.display = 'none';
   let gyroX = 0, gyroY = 0;        // smoothed orientation offset
   let tGyroX = 0, tGyroY = 0;      // target
   let hasGyro = false;
-  let baseAlpha = null, baseBeta = null, baseGamma = null;
+  let baseBeta = null, baseGamma = null;
 
   // Request permission on iOS 13+
   function startGyro() {
@@ -1593,15 +1598,24 @@ document.querySelector('.guides').style.display = 'none';
       tGyroY =  (db / 30) * strength;  // tilt forward/back → Y
     }, true);
 
-    // Smooth gyro values in the existing tick loop
-    const origTick = window._gyroTick;
-    const centerEl = document.getElementById('center');
+    // Smooth tilt into a subtle physical logo shift. Motion speed also controls
+    // whether disturbed logo particles are allowed to leave for the rain field.
+    let lastFrame = performance.now();
     function gyroTick() {
+      const now = performance.now();
+      const dt = Math.max(1 / 120, Math.min(0.05, (now - lastFrame) / 1000));
+      lastFrame = now;
+      const prevX = gyroX, prevY = gyroY;
       gyroX += (tGyroX - gyroX) * 0.06;
       gyroY += (tGyroY - gyroY) * 0.06;
       if (hasGyro) {
         window._gyroOffsetX = gyroX;
         window._gyroOffsetY = gyroY;
+        window._gyroVelocityX = (gyroX - prevX) / dt;
+        window._gyroVelocityY = (gyroY - prevY) / dt;
+        const instantMotion = Math.hypot(gyroX - prevX, gyroY - prevY);
+        window._gyroMotion = Math.max(instantMotion, (window._gyroMotion || 0) * 0.9);
+        logoWrap.style.transform = `translate3d(${gyroX * 0.58}px, ${gyroY * 0.58}px, 0)`;
       }
 
       requestAnimationFrame(gyroTick);
@@ -1615,8 +1629,8 @@ document.querySelector('.guides').style.display = 'none';
         if (!hasGyro) { requestAnimationFrame(updateLogoGyro); return; }
         const rect = logoWrap.getBoundingClientRect();
         // Map gyro offset to a point within the canvas
-        window._gyroLogoX = rect.left + rect.width  * 0.5 + gyroX * 3;
-        window._gyroLogoY = rect.top  + rect.height * 0.5 + gyroY * 3;
+        window._gyroLogoX = rect.left + rect.width  * 0.5 + gyroX * 2.6;
+        window._gyroLogoY = rect.top  + rect.height * 0.5 + gyroY * 2.6;
         requestAnimationFrame(updateLogoGyro);
       }
       requestAnimationFrame(updateLogoGyro);
