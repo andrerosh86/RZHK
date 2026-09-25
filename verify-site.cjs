@@ -4,20 +4,18 @@ const assert = require('assert');
 const html = fs.readFileSync('website/index.html', 'utf8');
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 scripts.forEach(s => new vm.Script(s));
-const events = {}, frames = new Map();
-let next = 0, reveals = 0;
-const elements = [];
-const context = {
- document: {body:null,createElement:() => { const el={style:{},remove(){this.removed=true;}}; elements.push(el); return el;},addEventListener:(n,f)=>events[n]=f},
- window:{addEventListener(){},_loaderDone(){reveals++;}},
- requestAnimationFrame:f=>{frames.set(++next,f);return next;},cancelAnimationFrame:id=>frames.delete(id),setTimeout(){}
-};
-vm.runInNewContext(scripts[0], context);
-events.keydown({key:'Enter',preventDefault(){}});
-events.keydown({key:'Enter',preventDefault(){}});
-assert.equal(reveals,1);
-assert(elements.every(e=>e.removed));
-const init=scripts[1].match(/function initLogo\(\) \{[\s\S]*?\n\}/)[0];
+for (const name of ['services.js','details.js','rain-impact.js','intro.js']) new vm.Script(fs.readFileSync(`website/${name}`,'utf8'));
+const dataContext={};
+vm.createContext(dataContext);
+vm.runInContext(fs.readFileSync('website/services.js','utf8')+';this.services=SERVICES;',dataContext);
+assert.equal(dataContext.services.length,5);
+for(const service of dataContext.services) {
+ assert(service.body && service.deliverables && service.process && service.project.alt);
+ for(const width of [640,1280]) assert(fs.existsSync(`website/media/${service.project.image}-${width}.webp`));
+}
+const frames = new Map(); let next=0;
+const context={requestAnimationFrame:f=>{frames.set(++next,f);return next;},cancelAnimationFrame:id=>frames.delete(id)};
+const init=scripts[0].match(/function initLogo\(\) \{[\s\S]*?\n\}/)[0];
 let logoBuilds = 0;
 const logoContext={logoStarted:false,logoCanvas:{classList:{add(){}}},logoFrame:null,buildParticles(){logoBuilds++;},animStart:0,renderParticles(){},requestAnimationFrame:context.requestAnimationFrame,cancelAnimationFrame:context.cancelAnimationFrame};
 vm.createContext(logoContext);
@@ -25,8 +23,8 @@ vm.runInContext(init,logoContext);
 for(let i=0;i<10;i++)vm.runInContext('initLogo()',logoContext);
 assert.equal(frames.size,1);
 assert.equal(logoBuilds,1, 'Repeated starts must not replay the logo');
-const resize=scripts[1].match(/function resizeLogo\(\) \{[\s\S]*?\n\}/)[0];
-const resizeContext={logoStarted:false};
+const resize=scripts[0].match(/function resizeLogo\(\) \{[\s\S]*?\n\}/)[0];
+const resizeContext={logoStarted:false,motionAllowed:()=>true,RainImpact:{rebuild(){}}};
 vm.createContext(resizeContext);
 vm.runInContext(resize,resizeContext);
 vm.runInContext('resizeLogo()',resizeContext); // Pre-loader resize must do nothing.
@@ -39,11 +37,11 @@ assert.equal(resizeContext.particles[0].x,30);
 assert.equal(resizeContext.particles[0].ox,20);
 assert.equal(resizeContext.particles[0].vx,4);
 // A particle displaced above/left of the logo must still be drawn on the page.
-const render = scripts[1].match(/function renderParticles\(now\) \{[\s\S]*?\n\}/)[0];
+const render = scripts[0].match(/function renderParticles\(now\) \{[\s\S]*?\n\}/)[0];
 const draws = [];
 let offset = [0, 0];
 const particleContext = {
-  animStart: 1, dpr: 2, logoFrame: null,
+  motionAllowed:()=>true, animStart: 1, dpr: 2, logoFrame: null,
   logoCanvas: {width: 2400, height: 1600, getBoundingClientRect: () => ({left: 0, top: 0})},
   logoWrap: {getBoundingClientRect: () => ({left: 200, top: 300})},
   lctx: {clearRect(){}, save(){}, restore(){}, translate(x,y){offset=[x,y];},
@@ -69,7 +67,7 @@ const rainContext = {
 };
 vm.createContext(rainContext);
 for (const name of ['projectRain', 'centerVisibility', 'releaseLogoDot', 'updateReleasedDot']) {
-  vm.runInContext(scripts[1].match(new RegExp('function '+name+'\\([^]*?\\n\\}'))[0], rainContext);
+  vm.runInContext(scripts[0].match(new RegExp('function '+name+'\\([^]*?\\n\\}'))[0], rainContext);
 }
 assert(vm.runInContext('releaseLogoDot({x:80,y:40,vx:2,vy:4,size:2}, {left:200,top:300}, 1000)', rainContext));
 const projected = vm.runInContext('projectRain(releasedDots[0].x,releasedDots[0].y,0)', rainContext);
@@ -92,5 +90,12 @@ assert.equal(rainContext.dot.x,100);
 assert.equal(rainContext.dot.z,500);
 assert(!/data:image|href="#/.test(html));
 assert.equal(fs.readdirSync('website').filter(n=>n.endsWith('.html')).length,1);
-console.log('PASS: script syntax, loader completion once, one frame after 10 restarts, particles beyond logo bounds, parallax alignment, no embedded images or dead fragment links, one HTML.');
-
+const impactContext={};vm.createContext(impactContext);
+vm.runInContext(fs.readFileSync('website/rain-impact.js','utf8')+';this.impact=RainImpact;',impactContext);
+const near={ox:40,oy:40,vx:0,vy:0},far={ox:400,oy:400,vx:0,vy:0};
+impactContext.impact.rebuild([near,far],2);
+assert.equal(impactContext.impact.strike(20,20,18,6,100,1),1);
+assert.equal(near.vy,12);assert.equal(near.impactAt,100);assert.equal(far.vy,0);
+impactContext.impact.rebuild([far],2);
+assert.equal(impactContext.impact.strike(20,20,18,6,200,1),0,'Rebuild must drop old positions');
+console.log('PASS: script syntax, one frame after 10 restarts, particles beyond logo bounds, parallax alignment, no embedded images or dead fragment links, one HTML.');
