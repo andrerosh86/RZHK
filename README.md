@@ -13,6 +13,7 @@ The home page retains the black stage and particle logo. Responsive WebP preview
 - Pause motion persists for the session. Reduced motion defaults to a static logo.
 - Background animation stops while a dialog or another browser tab is active. No orientation permissions are requested.
 - Falling rain dots randomly disturb nearby logo particles, which spring back into place. Spatial indexing and a per-impact cooldown limit collision work. Background animation also stops during the intro.
+- After the intro, the original slow logo reveal is retained: particles drift into place with 0–2.4s stagger and 3–5s formation durations. Rain impacts begin after the 7.4s formation window; navigation is available throughout.
 
 No contact or social destinations have been invented. Edit `website/services.js` to replace content and project metadata. See [the content guide](documentation/CONTENT_GUIDE.md) and [the audit](documentation/SITE_AUDIT.md).
 

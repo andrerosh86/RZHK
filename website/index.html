@@ -677,7 +677,7 @@ function drawField(now) {
   c.setTransform(fieldDpr, 0, 0, fieldDpr, 0, 0);
   c.clearRect(0, 0, w, h);
   const dt = reducedMotion.matches ? 0 : elapsed;
-  const impactRect = logoStarted && animStart && now-animStart>1100 ? logoWrap.getBoundingClientRect() : null;
+  const impactRect = logoStarted && animStart && now-animStart>7400 ? logoWrap.getBoundingClientRect() : null;
   c.fillStyle = '#fff';
   for (const stream of rainStreams) {
     stream.y += stream.speed * dt;
@@ -896,8 +896,8 @@ function buildParticles() {
       x: sx, y: sy, tx, ty, ox: tx, oy: ty,
       vx: 0, vy: 0,
       size: (Math.random() * 0.9 + 0.6) * dpr,
-      delay: Math.random() * 0.15,
-      duration: 0.6 + Math.random() * 0.25,
+      delay: Math.random() * 2.4,
+      duration: 3.0 + Math.random() * 2.0,
       driftSeed, driftAmp, driftFreq,
     };
   });

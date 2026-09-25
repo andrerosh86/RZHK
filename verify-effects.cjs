@@ -16,6 +16,12 @@ const fs=require('node:fs');
   await page.screenshot({path:'audit/intro.png'});
   await page.locator('#intro').waitFor({state:'hidden',timeout:6000});
   assert.equal(await page.evaluate(()=>document.getElementById('stage').inert),false);
+  const formation=await page.evaluate(()=>({
+    delayed:particles.some(p=>p.delay>2),
+    slow:particles.every(p=>p.duration>=3 && p.duration<=5),
+    scattered:particles.some(p=>Math.hypot(p.x-p.ox,p.y-p.oy)>100)
+  }));
+  assert(formation.delayed && formation.slow && formation.scattered,'Original slow, scattered logo formation is retained');
   await page.waitForFunction(()=>particles.some(p=>p.impactAt),{},{timeout:20000});
   const result=await page.evaluate(()=>({affected:particles.filter(p=>p.impactAt).length,particles:particles.length,streams:rainStreams.length}));
   assert(result.affected>0);
