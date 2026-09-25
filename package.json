@@ -1,0 +1,11 @@
+{
+  "name": "rzhk-visual-engineering",
+  "private": true,
+  "scripts": {
+    "check": "node verify-site.cjs",
+    "test:browser": "node verify-browser.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

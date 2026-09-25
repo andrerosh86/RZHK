@@ -4,194 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>RZHK — Visual Engineering</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
-<style>
-  /* Loader canvas covers everything from frame 1 */
-  #lc { position:fixed; inset:0; z-index:300; background:#000; display:block; }
-  /* Progress bar */
-  #lpb { position:fixed; bottom:0; left:0; height:1px; width:0%; background:#fff; z-index:301; transition:none; }
-</style>
-<script>
-/* =====================================================
-   CINEMATIC TEXT LOADER — BLUR EFFECT
-   Runs from <head> — no particles, no scaling.
-   Phase 1: Text fades in with blur (large blur→small blur)
-   Phase 2: Hold at sharp focus
-   Phase 3: Blur out (fades while blur increases)
-===================================================== */
-(function(){
-  var lc = document.createElement('canvas');
-  lc.id = 'lc';
-  var lpb = document.createElement('div');
-  lpb.id = 'lpb';
+<meta name="description" content="Cinematic architectural visualization, automotive imagery, visual storytelling, look development and art direction by RZHK." />
+<meta name="theme-color" content="#000000" />
+<link rel="preload" href="fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 
-  function inject() {
-    (document.body || document.documentElement).appendChild(lc);
-    (document.body || document.documentElement).appendChild(lpb);
-    start();
-  }
-  if (document.body) { inject(); }
-  else { document.addEventListener('DOMContentLoaded', inject); }
-
-  var ctx, W, H, dpr, animId, animStart;
-  var completed = false;
-  function finishLoader() {
-    if (completed) return;
-    completed = true;
-    cancelAnimationFrame(animId);
-    lc.remove(); lpb.remove();
-    if (window._loaderDone) window._loaderDone();
-  }
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !completed) { e.preventDefault(); finishLoader(); }
-  });
-  var prgVal = 0, prgTarget = 0;
-
-  // Animation state
-  var phase = 'blur-in'; // 'blur-in' | 'hold' | 'blur-out' | 'done'
-  var textAlpha = 0;
-  var textBlur = 0;  // blur radius
-  var blurOutStart = null;
-  var blurOutDur = 0.8;
-
-  function resize() {
-    dpr = Math.min(2, window.devicePixelRatio || 1);
-    W = lc.width  = window.innerWidth  * dpr;
-    H = lc.height = window.innerHeight * dpr;
-    lc.style.width  = window.innerWidth  + 'px';
-    lc.style.height = window.innerHeight + 'px';
-  }
-
-  // ── Geometry helpers ────────────────────────────────
-  // Responsive sizes — larger on mobile (narrow screens need bigger text)
-  function textSize() {
-    var vw = window.innerWidth;
-    if (vw <= 480) return Math.round(W * 0.052);       // mobile: ~20px on 390px screen
-    if (vw <= 900) return Math.round(W * 0.038);       // tablet
-    return Math.round(W * 0.014);                       // desktop
-  }
-  function stmtSize() {
-    var vw = window.innerWidth;
-    if (vw <= 480) return Math.round(W * 0.028);       // mobile
-    if (vw <= 900) return Math.round(W * 0.022);       // tablet
-    return Math.round(W * 0.0073);                      // desktop
-  }
-  var TAG_LS  = 0.38;
-  var STMT_LS = 0.04;
-
-  function centerY() { return H * 0.5 - H * 0.04; }
-
-  // ── Draw text at current state ────────────────────────
-  function drawText(blur, alpha) {
-    var cx = W / 2;
-    var tagSz  = textSize();
-    var stmtSz = stmtSize();
-    var tagLs  = tagSz * TAG_LS;
-    var stmtLs = stmtSz * STMT_LS;
-    var gap    = tagSz * 2.2;
-    var stmtLh = stmtSz * 1.9;
-    var compH  = tagSz + gap + stmtLh * 3;
-    var topY   = centerY() - compH * 0.5 + tagSz;
-
-    ctx.save();
-    ctx.textAlign = 'center';
-
-    // Apply blur filter
-    if (blur > 0.05) {
-      ctx.filter = 'blur(' + blur.toFixed(2) + 'px)';
-    } else {
-      ctx.filter = 'none';
-    }
-
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = '#fff';
-    ctx.font = '400 ' + tagSz + 'px Inter,Helvetica,Arial,sans-serif';
-    ctx.letterSpacing = tagLs + 'px';
-    ctx.fillText('VISUAL ENGINEERING', cx, topY);
-
-    ctx.fillStyle = '#b0b0b0';
-    ctx.font = '300 ' + stmtSz + 'px Inter,Helvetica,Arial,sans-serif';
-    ctx.letterSpacing = stmtLs + 'px';
-    var sy = topY + gap;
-    ctx.fillText('I craft cinematic visual experiences', cx, sy);
-    ctx.fillText('where architecture, automotive', cx, sy + stmtLh);
-    ctx.fillText('and storytelling meet precision and emotion.', cx, sy + stmtLh * 2);
-
-    ctx.filter = 'none';
-    ctx.restore();
-  }
-
-  // ── Main animation loop ─────────────────────────────
-  function frame(now) {
-    if (completed) return;
-    if (!animStart) animStart = now;
-    var elapsed = (now - animStart) / 1000;
-
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, W, H);
-
-    // progress bar
-    prgVal += (prgTarget - prgVal) * 0.055;
-    lpb.style.width = (prgVal * 100) + '%';
-
-    if (phase === 'blur-in') {
-      // t=0→0.35s: pure black
-      // t=0.35→0.5s: transition to blur-in phase (no-op)
-      // t=0.5→1.0s: fade in with blur ramping down smoothly (0.5s)
-      // Start: big blur (8px), alpha 0
-      // End: small blur (0.5px), alpha 1
-      if (elapsed < 0.5) {
-        // Black screen for 0.5s before text appears
-        textAlpha = 0;
-        textBlur = 8;
-      } else {
-        var t = Math.min(1, (elapsed - 0.5) / 0.5);
-        textAlpha = t;
-        textBlur = 8 * (1 - t) + 0.5;  // 8px → 0.5px
-        if (t >= 1) phase = 'hold';
-      }
-    } else if (phase === 'hold') {
-      // t=1.0→3.0s: hold sharp and visible (2.0s to see text clearly)
-      textAlpha = 1;
-      textBlur = 0.5;
-      if (elapsed >= 3.0) phase = 'blur-out';
-    } else if (phase === 'blur-out') {
-      // t=3.0→4.5s: fade out with blur ramping up smoothly (1.5s into darkness)
-      if (!blurOutStart) blurOutStart = now;
-      var et = (now - blurOutStart) / 1000;
-      var t = Math.min(1, et / 1.5);
-      textAlpha = 1 - t;
-      textBlur = 0.5 + t * t * 8;  // 0.5px → 8.5px, accelerating
-      if (t >= 1) {
-        phase = 'done';
-        lc.style.transition = 'opacity 0.3s ease';
-        lc.style.opacity = '0';
-        setTimeout(finishLoader, 320);
-        return;
-      }
-    }
-
-    drawText(textBlur, textAlpha);
-    animId = requestAnimationFrame(frame);
-  }
-
-  function start() {
-    ctx = lc.getContext('2d');
-    resize();
-    prgTarget = 0.3;
-    setTimeout(function(){ prgTarget = 0.65; }, 500);
-    setTimeout(function(){ prgTarget = 0.85; }, 1100);
-    setTimeout(function(){ prgTarget = 1.0;  }, 1900);
-    animId = requestAnimationFrame(frame);
-  }
-
-  window.addEventListener('resize', function() { resize(); });
-})();
-</script>
 <style>
   /* ---------- ROOT TOKENS ---------- */
   :root {
@@ -653,172 +469,34 @@
     .svc .title { font-size: 0.65rem; }
   }
 
-  /* ============================================================
-     MOBILE SERVICES BUTTON + DRAWER
-     Hidden on desktop, shown on mobile
-  ============================================================ */
-  .mob-svc-btn,
-  .mob-svc-drawer,
-  .mob-svc-overlay {
-    display: none;
-  }
-  @media (max-width: 900px) {
-    /* Hide the regular services strip */
-    .services { display: none !important; }
-
-    /* Floating pill button at bottom center */
-    .mob-svc-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: fixed;
-      bottom: 1.6rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 60;
-      padding: 0.75rem 1.5rem;
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 40px;
-      color: #fff;
-      font-family: var(--font);
-      font-size: 0.68rem;
-      letter-spacing: 0.32em;
-      font-weight: 400;
-      cursor: pointer;
-      transition: background .3s ease, border-color .3s ease, transform .3s ease;
-      white-space: nowrap;
-    }
-    .mob-svc-btn:hover,
-    .mob-svc-btn:active {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.35);
-    }
-    .mob-svc-btn.open {
-      transform: translateX(-50%) translateY(4px);
-    }
-    .mob-svc-btn .mob-svc-icon {
-      display: flex;
-      align-items: center;
-      transition: transform .35s cubic-bezier(.2,.7,.2,1);
-    }
-    .mob-svc-btn.open .mob-svc-icon {
-      transform: rotate(180deg);
-    }
-
-    /* Slide-up drawer */
-    .mob-svc-drawer {
-      display: block;
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 70;
-      background: rgba(4,4,4,0.97);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,255,255,0.12);
-      border-radius: 18px 18px 0 0;
-      padding: 0 0 calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
-      transform: translateY(100%);
-      transition: transform .45s cubic-bezier(.2,.7,.2,1);
-      pointer-events: none;
-    }
-    .mob-svc-drawer.open {
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .mob-svc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.2rem 1.5rem 0.8rem;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .mob-svc-title {
-      font-size: 0.65rem;
-      letter-spacing: 0.4em;
-      color: var(--fg-mute);
-      font-weight: 400;
-    }
-    .mob-svc-close {
-      color: var(--fg-dim);
-      display: flex;
-      align-items: center;
-      padding: 4px;
-      transition: color .25s ease;
-    }
-    .mob-svc-close:hover { color: #fff; }
-
-    .mob-svc-list {
-      padding: 0.5rem 0;
-    }
-    .mob-svc-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      cursor: pointer;
-      transition: background .25s ease;
-    }
-    .mob-svc-item:last-child { border-bottom: none; }
-    .mob-svc-item:active { background: rgba(255,255,255,0.04); }
-    .mob-svc-item-left { display: flex; flex-direction: column; gap: 0.3rem; }
-    .mob-svc-item-num {
-      font-size: 0.55rem;
-      letter-spacing: 0.35em;
-      color: var(--fg-mute);
-    }
-    .mob-svc-item-title {
-      font-size: 0.82rem;
-      letter-spacing: 0.14em;
-      font-weight: 500;
-      color: #fff;
-      text-transform: uppercase;
-    }
-    .mob-svc-item-arrow {
-      color: var(--fg-mute);
-      transition: transform .3s ease, color .3s ease;
-    }
-    .mob-svc-item:active .mob-svc-item-arrow {
-      transform: translateX(4px);
-      color: #fff;
-    }
-
-    /* Overlay behind drawer */
-    .mob-svc-overlay {
-      display: block;
-      position: fixed;
-      inset: 0;
-      z-index: 65;
-      background: rgba(0,0,0,0.5);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .35s ease;
-    }
-    .mob-svc-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  }
+  .mob-svc-btn {display:none;}
 </style>
+<link rel="stylesheet" href="polish.css">
 </head>
 <body>
+<section class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle" hidden>
+  <div class="intro-copy"><h2 id="introTitle">VISUAL ENGINEERING</h2><p>I craft cinematic visual experiences<br>where architecture, automotive<br>and storytelling meet precision and emotion.</p></div>
+  <button type="button" id="skipIntro">SKIP INTRO <span aria-hidden="true">↗</span></button>
+  <div class="intro-timeline" aria-hidden="true"></div>
+</section>
 
 <!-- ================= LOADER ================= -->
-<div class="loader" id="loader"></div>
+
 
 <!-- ================= STAGE ================= -->
 <main class="stage" id="stage">
   <canvas class="motion-field" id="motionField" aria-hidden="true"></canvas>
-  <canvas class="logo-canvas" id="logoCanvas" aria-label="RZHK"></canvas>
+  <h1 class="sr-only">RZHK — Visual Engineering</h1>
+  <canvas class="logo-canvas" id="logoCanvas" aria-hidden="true"></canvas>
   <div class="seam"></div>
   <div class="guides"></div>
 
   <nav class="nav enter" aria-label="Primary">
+    <button type="button" id="servicesBtn">SERVICES</button>
     <button type="button" id="aboutBtn">ABOUT</button>
+    <button type="button" id="replayIntro">INTRO</button>
   </nav>
+  <button type="button" class="motion-toggle" id="motionToggle" aria-pressed="false">Pause motion</button>
 
   <!-- center -->
   <section class="center" id="center">
@@ -826,9 +504,7 @@
     </div>
     <div class="tagline">VISUAL ENGINEERING</div>
     <p class="statement" id="statement">
-      I craft cinematic visual experiences<br>
-      where architecture, automotive<br>
-      and storytelling meet precision and emotion.
+      Cinematic imagery for architecture, automotive and brands. Crafted with precision. Built to be felt.
     </p>
     <button type="button" id="exploreBtn" class="cta enter">
       <span>EXPLORE SERVICES</span>
@@ -852,128 +528,24 @@
     </span>
   </button>
 
-  <!-- Mobile services drawer -->
-  <div class="mob-svc-drawer" id="mobSvcDrawer" aria-hidden="true">
-    <div class="mob-svc-header">
-      <span class="mob-svc-title">SERVICES</span>
-      <button class="mob-svc-close" id="mobSvcClose" aria-label="Close services">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-    <div class="mob-svc-list" id="mobSvcList"></div>
-  </div>
-  <div class="mob-svc-overlay" id="mobSvcOverlay"></div>
 </main>
 
 <!-- ================= MODAL ================= -->
-<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" aria-hidden="true">
+<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" aria-hidden="true" inert>
   <div class="modal">
-    <button class="close" id="modalClose" aria-label="Close">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <div class="eyebrow" id="mEyebrow">SERVICE · 01</div>
-    <h3 id="mTitle">ARCHITECTURAL VISUALIZATION</h3>
-    <div class="rule"></div>
-    <p id="mBody">Designing spaces before they exist.</p>
-    <div class="tags" id="mTags"></div>
+    <button class="close" id="modalClose" aria-label="Close dialog"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div id="modalContent" class="modal-content"></div>
   </div>
 </div>
-
+<noscript><style>.logo-wrap::after{content:'RZHK';font:500 12vw Arial;letter-spacing:.2em}.center{bottom:60px}button,.services{display:none!important}</style><p style="position:fixed;bottom:25px;z-index:60;text-align:center;width:100%;padding:16px;background:#111">Enable JavaScript to explore architectural visualization, automotive cinematics, visual storytelling, look development and art direction.</p></noscript>
+<script src="services.js"></script>
+<script src="details.js"></script>
+<script src="rain-impact.js"></script>
 <script>
 /* ================= DATA ================= */
 const PARALLAX_STRENGTH = 14;
 const VIGNETTE = 0.55;
 
-const SERVICES = [
-  { num: '01', title: 'Architectural\nVisualization',
-    short: 'Designing spaces before they exist.',
-    body:  'Precision-driven imagery for architecture, interiors and real estate. Each frame is calibrated — light, material and atmosphere engineered to represent a space before it is built.',
-    tags: ['EXTERIOR', 'INTERIOR', 'REAL ESTATE', 'CGI'] },
-  { num: '02', title: 'Automotive\nCinematics',
-    short: 'Capturing performance in its purest form.',
-    body:  'High-end visuals built around emotion, speed and surface. From hero shots to full cinematic sequences — studied reflections, engineered lighting, tuned color.',
-    tags: ['HERO STILLS', 'SEQUENCES', 'HDRI', 'GRADING'] },
-  { num: '03', title: 'Visual\nStorytelling',
-    short: 'Telling stories through light, motion and detail.',
-    body:  'Crafting narratives through composition, timing and atmosphere. Every frame serves a purpose — pacing, silence and rhythm treated as design surfaces.',
-    tags: ['DIRECTION', 'COMPOSITION', 'EDIT', 'SOUND'] },
-  { num: '04', title: 'Technical\nDirection',
-    short: 'Precision, realism and technical mastery.',
-    body:  'Bridging creativity and execution. Optimizing pipelines, realism and production workflows so the vision survives contact with the render engine.',
-    tags: ['PIPELINE', 'LOOKDEV', 'SHADER', 'REVIEW'] },
-  { num: '05', title: 'Visual\nEngineering',
-    short: 'Where art direction meets technical execution.',
-    body:  'Building controlled visual systems for consistent, high-end output across series of images, campaigns and long-form cinematic projects.',
-    tags: ['SYSTEMS', 'BRANDING', 'STYLE FRAMES', 'CONSISTENCY'] },
-];
-
-/* ================= RENDER SERVICES ================= */
-const strip = document.getElementById('services-strip');
-strip.innerHTML = SERVICES.map((s, i) => `
-  <button class="svc" data-idx="${i}">
-    <div class="num">${s.num} / 05</div>
-    <div class="title">${s.title.replace('\n','<br>')}</div>
-    <div class="desc">${s.short}</div>
-    <div class="more">EXPLORE <span>→</span></div>
-  </button>
-`).join('');
-
-strip.addEventListener('click', (e) => {
-  const btn = e.target.closest('.svc');
-  if (!btn) return;
-  openModal(+btn.dataset.idx);
-});
-
-/* ================= MODAL ================= */
-const modal = document.getElementById('modal');
-const mEye = document.getElementById('mEyebrow');
-const mTitle = document.getElementById('mTitle');
-const mBody = document.getElementById('mBody');
-const mTags = document.getElementById('mTags');
-
-let modalTrigger = null;
-function showModal() {
-  modalTrigger = document.activeElement;
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-  document.getElementById("stage").inert = true;
-  document.getElementById("modalClose").focus();
-}
-function openModal(i) {
-  const s = SERVICES[i];
-  mEye.textContent = `SERVICE · ${s.num}`;
-  mTitle.textContent = s.title.replace('\n', ' ').toUpperCase();
-  mBody.textContent = s.body;
-  mTags.innerHTML = s.tags.map(t => `<span>${t}</span>`).join('');
-  showModal();
-}
-function closeModal() {
-  if (!modal.classList.contains('open')) return;
-  document.getElementById('stage').inert = false;
-  modal.classList.remove('open');
-  modal.setAttribute('aria-hidden', 'true');
-  if (modalTrigger) modalTrigger.focus();
-}
-document.getElementById('modalClose').addEventListener('click', closeModal);
-modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-
-document.getElementById('aboutBtn').addEventListener('click', () => {
-  mEye.textContent = 'ABOUT';
-  mTitle.textContent = 'RZHK · VISUAL ENGINEER';
-  mBody.textContent = 'For many years, I have been creating cinematic visuals where architecture, automotive design and storytelling meet. My strength is combining a precise technical eye with strong art direction—shaping light, materials, composition and motion into images that feel both realistic and emotionally clear. I keep growing with every project, continuously exploring new tools, workflows and creative possibilities to push the quality of my work further.';
-  mTags.innerHTML = '<span>ART DIRECTION</span><span>TECHNICAL PRECISION</span><span>REALISM</span><span>STORYTELLING</span><span>CONTINUOUS GROWTH</span>';
-  showModal();
-});
-function exploreServices() {
-  const mobileButton = document.getElementById('mobSvcBtn');
-  if (getComputedStyle(mobileButton).display !== 'none') mobileButton.click();
-  else openModal(0);
-}
-document.getElementById('exploreBtn').addEventListener('click', exploreServices);
-modal.addEventListener('keydown', e => {
-  if (e.key === 'Tab') { e.preventDefault(); document.getElementById('modalClose').focus(); }
-});
 /* ================= PARALLAX ================= */
 const stage = document.getElementById('stage');
 const centerEl = document.getElementById('center');
@@ -988,29 +560,28 @@ window.addEventListener('mousemove', (e) => {
   stage.dataset.hover = tmx < 0.5 ? 'left' : 'right';
 });
 
+let parallaxFrame = null;
 function tick() {
+  if (!motionAllowed()) return;
   mx += (tmx - mx) * 0.08;
   my += (tmy - my) * 0.08;
   const dx = (mx - 0.5) * parallaxStrength + (window._gyroOffsetX || 0);
   const dy = (my - 0.5) * parallaxStrength + (window._gyroOffsetY || 0);
-  centerEl.style.transform = `translate(-50%, -54%) translate3d(${dx * 0.15}px, ${dy * 0.15}px, 0)`;
-  requestAnimationFrame(tick);
+  centerEl.style.transform = `translateX(-50%) translate3d(${dx * 0.15}px, ${dy * 0.15}px, 0)`;
+  parallaxFrame = requestAnimationFrame(tick);
 }
-requestAnimationFrame(tick);
-
-/* ================= ENTRY ================= */
-function playEntry() {
-  const nodes = document.querySelectorAll('.enter');
-  nodes.forEach((n, i) => {
-    setTimeout(() => n.classList.add('show'), 120 + i * 90);
-  });
-}
+// Started by syncMotion after initialization.
 
 /* ================= PARTICLE LOGO ================= */
 // Perspective dot rain. All geometry uses CSS pixels before raster scaling.
 const motionField = document.getElementById('motionField');
 const fieldContext = motionField.getContext('2d');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let motionPaused = reducedMotion.matches;
+let introActive = false;
+try { motionPaused ||= sessionStorage.getItem('rzhk-motion') === 'off'; } catch {}
+function motionAllowed() { return !introActive && !motionPaused && !document.hidden && !modal.classList.contains('open'); }
+
 let fieldWidth = 0, fieldHeight = 0, fieldDpr = 1;
 let fieldFrame = null, fieldLast = 0, fieldTime = 0;
 let fieldX = 0.5, fieldY = 0.5;
@@ -1088,6 +659,7 @@ function resizeField() {
   releasedDots.length = 0;
 }
 function drawField(now) {
+  if (!motionAllowed()) return;
   fieldFrame = null;
   if (document.hidden) return;
   const elapsed = fieldLast ? Math.min((now - fieldLast) / 1000, 0.05) : 0;
@@ -1105,21 +677,25 @@ function drawField(now) {
   c.setTransform(fieldDpr, 0, 0, fieldDpr, 0, 0);
   c.clearRect(0, 0, w, h);
   const dt = reducedMotion.matches ? 0 : elapsed;
+  const impactRect = logoStarted && animStart && now-animStart>7400 ? logoWrap.getBoundingClientRect() : null;
   c.fillStyle = '#fff';
   for (const stream of rainStreams) {
     stream.y += stream.speed * dt;
-    const head = projectRain(stream.x, stream.y, stream.z);
+    let head = projectRain(stream.x, stream.y, stream.z);
     if (head.y - stream.count * stream.gap * head.scale > h + 30) {
       stream.y = (-h * 0.46 - 40) / head.scale + (fieldY - 0.5) * 65;
+      head = projectRain(stream.x, stream.y, stream.z);
     }
+    if (impactRect) checkRainImpact(stream,head,impactRect,now,dt);
+    const screenGap = stream.gap * head.scale;
+    const pulseAt = (t * stream.pulseSpeed + stream.pulseOffset) % (stream.count + 8) - 4;
     for (let j = 0; j < stream.count; j++) {
-      const point = projectRain(stream.x, stream.y - j * stream.gap, stream.z);
+      const point = {x:head.x,y:head.y-j*screenGap,scale:head.scale};
       if (point.y < -4 || point.y > h + 4) continue;
       const tail = (1 - j / stream.count) ** 1.6;
       // Random round/square changes provide the changing-character rhythm.
       const change = Math.floor(t * stream.changeRate + j * 0.43);
       const noise = Math.abs(Math.sin(stream.seed * 12.9898 + j * 78.233 + change * 37.719));
-      const pulseAt = (t * stream.pulseSpeed + stream.pulseOffset) % (stream.count + 8) - 4;
       const pulse = Math.exp(-Math.pow(j - pulseAt, 2) / 2.8);
       const brightness = Math.min(1, 0.65 + pulse * 0.25 + (j === 0 ? 0.1 : 0));
       c.globalAlpha = (0.27 + point.scale * 0.52) * tail * brightness * centerVisibility(point.x, point.y);
@@ -1212,6 +788,7 @@ function updateReleasedDot(dot, dt, time) {
 }
 function startField() {
   cancelAnimationFrame(fieldFrame);
+  if (!motionAllowed()) return;
   fieldLast = 0;
   fieldFrame = requestAnimationFrame(drawField);
 }
@@ -1219,10 +796,7 @@ window.addEventListener('pointermove', e => {
   if (e.pointerType !== 'mouse') { tmx = e.clientX / innerWidth; tmy = e.clientY / innerHeight; }
 });
 window.addEventListener('resize', () => { resizeField(); startField(); });
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) cancelAnimationFrame(fieldFrame); else startField();
-});
-reducedMotion.addEventListener('change', startField);
+
 resizeField();
 startField();
 
@@ -1244,7 +818,21 @@ let animStart = 0;
 let logoFrame = null;
 let logoStarted = false;
 let logoWidth = 0, logoHeight = 0;
+let lastRainImpact = -Infinity;
 let dpr = Math.min(2, window.devicePixelRatio || 1);
+
+function checkRainImpact(stream,head,rect,now,dt) {
+  // One candidate dot per stream at 30 Hz; coarse bounds reject most streams.
+  if(now-lastRainImpact<360 || now<(stream.nextImpact||0) || head.scale<0.28) return;
+  if(head.x<rect.left || head.x>rect.right) return;
+  const gap=stream.gap*head.scale;
+  const index=Math.round((head.y-(rect.top+rect.height*.5))/gap);
+  if(index<0 || index>stream.count*.65) return;
+  const y=head.y-index*gap;
+  if(y<rect.top || y>rect.bottom || Math.random()>dt*.45) return;
+  const hit=RainImpact.strike(head.x-rect.left,y-rect.top,fieldWidth<640?18:28,4+head.scale*5,now,Math.sin(stream.seed));
+  if(hit) {lastRainImpact=now;stream.nextImpact=now+900+Math.random()*1600;}
+}
 
 function sampleLogoPoints(targetWidth, targetHeight) {
   // Build offscreen canvas, draw the SVG paths filled, then sample non-empty pixels
@@ -1313,9 +901,11 @@ function buildParticles() {
       driftSeed, driftAmp, driftFreq,
     };
   });
+  RainImpact.rebuild(particles,dpr);
 }
 
 function renderParticles(now) {
+  if (!motionAllowed()) return;
   if (!animStart) animStart = now;
   const elapsed = (now - animStart) / 1000;
   const W = logoCanvas.width, H = logoCanvas.height;
@@ -1385,8 +975,9 @@ function renderParticles(now) {
     // particle fades in as it approaches target
     lctx.globalAlpha = t < 1 ? (0.25 + ease * 0.75) : 1;
     if (p.releasedAt) lctx.globalAlpha *= Math.min(1, (now - p.releasedAt) / 1200);
+    const impactGlow=p.impactAt ? Math.max(0,1-(now-p.impactAt)/240) : 0;
     lctx.fillStyle = '#fff';
-    lctx.fillRect(p.x, p.y, p.size, p.size);
+    lctx.fillRect(p.x, p.y, p.size+impactGlow*dpr*.6, p.size+impactGlow*dpr*.6);
   }
   lctx.globalAlpha = 1;
   lctx.restore();
@@ -1416,8 +1007,10 @@ function resizeLogo() {
     p.size *= nextDpr / dpr;
   }
   dpr = nextDpr; logoWidth = nextWidth; logoHeight = nextHeight;
+  RainImpact.rebuild(particles,dpr);
   logoCanvas.width = window.innerWidth * dpr;
   logoCanvas.height = window.innerHeight * dpr;
+  if (!motionAllowed()) drawStaticLogo();
 }
 
 window.addEventListener('mousemove', (e) => {
@@ -1434,61 +1027,33 @@ window.addEventListener('resize', () => {
 
 
 
-/* ================= LOADER =================
-   Sequence:
-   t=0→0.35s  — pure black screen (brief pause)
-   t=0.35→0.5s — transition buffer
-   t=0.5→1.0s — text fades in with blur (8px → 0.5px, smooth 0.5s)
-   t=1.0→3.0s — text sharp and visible (2.0s to read)
-   t=3.0→4.5s — text blurs out and fades (0.5px → 8px, 1.5s)
-   t=4.5s     — loader canvas removed
-   
-   PAGE REVEAL SEQUENCE:
-   t=4.5s     — logo particles start forming (from initLogo)
-   t=5.3s     — tagline fades in with blur-in (0.8s)
-   t=5.5s     — statement fades in with blur-in (0.8s)
-   t=6.0s     — backgrounds begin fade in (1.2s)
-   t=7.2s     — backgrounds fully visible
-   t=7.3s     — rest of page (nav, services, footer) stagger in
-*/
-(function startLoader() {
-  var loader = document.getElementById('loader');
-  if (loader) loader.style.display = 'none';
-
-  var tagEl      = document.querySelector('.tagline');
-  var stmtEl     = document.querySelector('.statement');
-  var logoWrapEl = document.getElementById('logoWrap');
-
-  // When loader canvas is done (after blur-out), show DOM text and rest of page
-  window._loaderDone = function() {
-    if (logoStarted) return;
-    motionField.classList.add('visible');
-    // Start logo particles immediately
-    if (logoWrapEl) {
-      logoWrapEl.style.opacity = '1';
-      logoWrapEl.classList.remove('enter');
-    }
-    initLogo();
-    
-    // Fade in center text (tagline, statement) after logo forms slightly
-    // t=0.8s: tagline appears with blur-in (blur 8px→0px, opacity 0→1)
-    // t=1.0s: statement appears with blur-in (blur 8px→0px, opacity 0→1)
-    setTimeout(() => {
-      if (tagEl) tagEl.classList.add('visible');
-    }, 800);
-    
-    setTimeout(() => {
-      if (stmtEl) stmtEl.classList.add('visible');
-    }, 1000);
-    
-    
-    // Fade in rest of page elements (nav, services, footer, cta)
-    // t=2.8s: start the playEntry stagger (logo has ~2.5s to settle)
-    setTimeout(() => {
-      playEntry();
-    }, 2800);
-  };
-})();
+/* The skippable introduction coordinates animation startup. */
+motionField.classList.add('visible');
+initLogo();
+document.querySelectorAll('.enter').forEach(el => el.classList.add('show'));
+function drawStaticLogo() {
+  const rect = logoWrap.getBoundingClientRect();
+  lctx.clearRect(0,0,logoCanvas.width,logoCanvas.height);
+  lctx.save(); lctx.translate(rect.left*dpr,rect.top*dpr);
+  lctx.fillStyle='#fff'; lctx.globalAlpha=1;
+  for(const p of particles) {p.x=p.ox;p.y=p.oy;p.vx=p.vy=0;lctx.fillRect(p.ox,p.oy,p.size,p.size);}
+  lctx.restore();
+}
+function syncMotion() {
+  cancelAnimationFrame(logoFrame); cancelAnimationFrame(fieldFrame); cancelAnimationFrame(parallaxFrame);
+  const button=document.getElementById('motionToggle');
+  button.textContent=motionPaused?'Play motion':'Pause motion';
+  button.setAttribute('aria-pressed',String(motionPaused));
+  document.getElementById('replayIntro').disabled=motionPaused || reducedMotion.matches;
+  document.documentElement.dataset.motion=motionPaused?'off':'on';
+  if(motionAllowed()) {startField();logoFrame=requestAnimationFrame(renderParticles);parallaxFrame=requestAnimationFrame(tick);}
+  else if(motionPaused) {centerEl.style.transform='translateX(-50%)';drawStaticLogo();fieldContext.clearRect(0,0,motionField.width,motionField.height);}
+}
+document.getElementById('motionToggle').addEventListener('click',()=>{motionPaused=!motionPaused;try{sessionStorage.setItem('rzhk-motion',motionPaused?'off':'on');}catch{} syncMotion();});
+reducedMotion.addEventListener('change',()=>{motionPaused=reducedMotion.matches;syncMotion();});
+document.addEventListener('visibilitychange',syncMotion);
+window.addEventListener('motionstatechange',syncMotion);
+syncMotion();
 
 /* ================= STATIC SETTINGS ================= */
 document.querySelector('.seam').style.opacity = VIGNETTE.toFixed(2);
@@ -1496,154 +1061,7 @@ document.querySelector('.guides').style.display = 'none';
 
 
 
-/* ================= MOBILE SERVICES DRAWER ================= */
-(function() {
-  const btn     = document.getElementById('mobSvcBtn');
-  const drawer  = document.getElementById('mobSvcDrawer');
-  const overlay = document.getElementById('mobSvcOverlay');
-  const closeBtn= document.getElementById('mobSvcClose');
-  const list    = document.getElementById('mobSvcList');
-  if (!btn) return;
-
-  // Populate drawer list from the same SERVICES data
-  SERVICES.forEach((s, i) => {
-    const item = document.createElement('button');
-    item.type = 'button';
-    item.style.width = '100%';
-    item.style.textAlign = 'left';
-    item.className = 'mob-svc-item';
-    item.innerHTML = `
-      <div class="mob-svc-item-left">
-        <span class="mob-svc-item-num">${s.num}</span>
-        <span class="mob-svc-item-title">${s.title}</span>
-      </div>
-      <span class="mob-svc-item-arrow">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </span>`;
-    item.addEventListener('click', () => {
-      closeDrawer();
-      // Trigger the existing service modal
-      const strip = document.getElementById('services-strip');
-      if (strip) {
-        const svcs = strip.querySelectorAll('.svc');
-        if (svcs[i]) svcs[i].click();
-      }
-    });
-    list.appendChild(item);
-  });
-
-  function openDrawer() {
-    drawer.classList.add('open');
-    overlay.classList.add('open');
-    btn.classList.add('open');
-    drawer.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeDrawer() {
-    drawer.classList.remove('open');
-    overlay.classList.remove('open');
-    btn.classList.remove('open');
-    drawer.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-
-  btn.addEventListener('click', () => {
-    drawer.classList.contains('open') ? closeDrawer() : openDrawer();
-  });
-  closeBtn.addEventListener('click', closeDrawer);
-  overlay.addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && drawer.classList.contains('open')) { closeDrawer(); btn.focus(); }
-  });
-})();
-
-/* ================= GYROSCOPE PARALLAX (mobile) ================= */
-(function() {
-  // Only activate on touch devices with DeviceOrientation support
-  if (!('ontouchstart' in window)) return;
-
-  let gyroX = 0, gyroY = 0;        // smoothed orientation offset
-  let tGyroX = 0, tGyroY = 0;      // target
-  let hasGyro = false;
-  let baseBeta = null, baseGamma = null;
-
-  // Request permission on iOS 13+
-  function startGyro() {
-    if (typeof DeviceOrientationEvent === 'undefined') return;
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      DeviceOrientationEvent.requestPermission()
-        .then(state => { if (state === 'granted') bindGyro(); })
-        .catch(() => {});
-    } else {
-      bindGyro();
-    }
-  }
-
-  function bindGyro() {
-    window.addEventListener('deviceorientation', (e) => {
-      if (e.beta == null || e.gamma == null) return;
-      if (!hasGyro) {
-        // Capture baseline on first reading
-        baseBeta  = e.beta  || 0;
-        baseGamma = e.gamma || 0;
-        hasGyro = true;
-        return;
-      }
-      // delta from baseline, clamped to ±30°
-      const db = Math.max(-30, Math.min(30, (e.beta  || 0) - baseBeta));
-      const dg = Math.max(-30, Math.min(30, (e.gamma || 0) - baseGamma));
-      // Map ±30° → ±strength px
-      const strength = 18;
-      tGyroX =  (dg / 30) * strength;  // tilt left/right → X
-      tGyroY =  (db / 30) * strength;  // tilt forward/back → Y
-    }, true);
-
-    // Smooth tilt into a subtle physical logo shift. Motion speed also controls
-    // whether disturbed logo particles are allowed to leave for the rain field.
-    let lastFrame = performance.now();
-    function gyroTick() {
-      const now = performance.now();
-      const dt = Math.max(1 / 120, Math.min(0.05, (now - lastFrame) / 1000));
-      lastFrame = now;
-      const prevX = gyroX, prevY = gyroY;
-      gyroX += (tGyroX - gyroX) * 0.06;
-      gyroY += (tGyroY - gyroY) * 0.06;
-      if (hasGyro) {
-        window._gyroOffsetX = gyroX;
-        window._gyroOffsetY = gyroY;
-        window._gyroVelocityX = (gyroX - prevX) / dt;
-        window._gyroVelocityY = (gyroY - prevY) / dt;
-        const instantMotion = Math.hypot(gyroX - prevX, gyroY - prevY);
-        window._gyroMotion = Math.max(instantMotion, (window._gyroMotion || 0) * 0.9);
-        logoWrap.style.transform = `translate3d(${gyroX * 0.58}px, ${gyroY * 0.58}px, 0)`;
-      }
-
-      requestAnimationFrame(gyroTick);
-    }
-    requestAnimationFrame(gyroTick);
-
-    // Also drive particle repulsion via synthetic mouse position
-    const logoCanvas = document.getElementById('logoCanvas');
-    if (logoCanvas) {
-      function updateLogoGyro() {
-        if (!hasGyro) { requestAnimationFrame(updateLogoGyro); return; }
-        const rect = logoWrap.getBoundingClientRect();
-        // Map gyro offset to a point within the canvas
-        window._gyroLogoX = rect.left + rect.width  * 0.5 + gyroX * 2.6;
-        window._gyroLogoY = rect.top  + rect.height * 0.5 + gyroY * 2.6;
-        requestAnimationFrame(updateLogoGyro);
-      }
-      requestAnimationFrame(updateLogoGyro);
-    }
-  }
-
-  // Trigger on first touch (needed for iOS permission flow)
-  document.addEventListener('touchstart', function onFirst() {
-    document.removeEventListener('touchstart', onFirst);
-    startGyro();
-  }, { once: true });
-})();
 </script>
+<script src="intro.js"></script>
 </body>
 </html>
-
