@@ -116,9 +116,9 @@
     ctx.font = '300 ' + stmtSz + 'px Inter,Helvetica,Arial,sans-serif';
     ctx.letterSpacing = stmtLs + 'px';
     var sy = topY + gap;
-    ctx.fillText('I craft cinematic visual experiences', cx, sy);
-    ctx.fillText('where architecture, automotive', cx, sy + stmtLh);
-    ctx.fillText('and storytelling meet precision and emotion.', cx, sy + stmtLh * 2);
+    ctx.fillText('I create interactive configurators,', cx, sy);
+    ctx.fillText('architectural experiences and cinematic films', cx, sy + stmtLh);
+    ctx.fillText('for marine, automotive, aviation and products.', cx, sy + stmtLh * 2);
 
     ctx.filter = 'none';
     ctx.restore();
@@ -336,116 +336,6 @@
     filter: blur(0px);
   }
 
-  .statement {
-    margin-top: 2.6rem;
-    max-width: 440px;
-    font-size: 0.92rem;
-    line-height: 1.75;
-    letter-spacing: 0.04em;
-    color: var(--fg-dim);
-    font-weight: 300;
-    text-wrap: balance;
-    opacity: 0;
-    filter: blur(8px);
-    transition: opacity 1.0s ease 1.0s, filter 1.0s ease 1.0s;
-  }
-  .statement.visible {
-    opacity: 1;
-    filter: blur(0px);
-  }
-
-  .cta {
-    margin-top: 3rem;
-    display: inline-flex; align-items: center; gap: 14px;
-    font-size: 0.72rem;
-    letter-spacing: 0.32em;
-    padding: 14px 2px 10px;
-    border: 0;
-    color: #fff;
-    font-weight: 400;
-    position: relative;
-  }
-  .cta::after {
-    content: '';
-    position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-    width: 44px; height: 1px; background: #fff;
-    transition: width .5s cubic-bezier(.2,.7,.2,1);
-  }
-  .cta:hover::after { width: 100%; }
-  .cta .arrow {
-    display: inline-block;
-    transform: translateY(-1px);
-    transition: transform .4s ease;
-  }
-  .cta:hover .arrow { transform: translate(4px, -1px); }
-
-  /* ---------- SERVICE STRIP ---------- */
-  .services {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    margin: 0 auto;
-    width: min(95vw, 1600px);
-    z-index: 35;
-    padding: 1.5rem 2.5rem 1.75rem;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.72) 100%);
-  }
-  .svc {
-    padding: 1.1rem 1.25rem 0.25rem;
-    text-align: left;
-    border-left: 1px solid var(--rule);
-    cursor: pointer;
-    position: relative;
-    transition: background .35s ease, transform .45s cubic-bezier(.2,.7,.2,1);
-  }
-  .svc:first-child { border-left: 0; }
-  .svc::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0;
-    width: 1px; height: 0;
-    background: #fff;
-    transition: height .45s cubic-bezier(.2,.7,.2,1);
-  }
-  .svc:first-child::before { left: -1px; display: none; }
-  .svc:hover::before { height: 100%; }
-  .svc:hover { background: rgba(255,255,255,0.02); }
-  .svc .num {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: var(--fg-mute);
-    font-variant-numeric: tabular-nums;
-  }
-  .svc .title {
-    margin-top: 0.9rem;
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.22em;
-    line-height: 1.35;
-    text-transform: uppercase;
-    color: #fff;
-    min-height: 2.6em;
-  }
-  .svc .desc {
-    margin-top: 0.8rem;
-    font-size: 0.72rem;
-    line-height: 1.6;
-    letter-spacing: 0.03em;
-    color: var(--fg-dim);
-    font-weight: 300;
-    text-wrap: pretty;
-  }
-  .svc .more {
-    margin-top: 0.9rem;
-    display: inline-flex; gap: 8px; align-items: center;
-    font-size: 0.6rem; letter-spacing: 0.3em;
-    color: var(--fg-mute);
-    transition: color .3s ease;
-  }
-  .svc:hover .more { color: #fff; }
-
   /* ---------- FOOTER ---------- */
   .foot {
     position: absolute;
@@ -456,7 +346,7 @@
     left: 0; right: 0; bottom: 0;
     z-index: 36;
     padding: 0.65rem 2.5rem;
-    display: flex; justify-content: space-between; align-items: center;
+    display: flex; justify-content: center; align-items: center;
     font-size: 0.6rem; letter-spacing: 0.32em;
     color: var(--fg-mute);
     border-top: 1px solid rgba(255,255,255,0.06);
@@ -476,7 +366,6 @@
   @keyframes slide { 0% { left:-50%; } 60% { left:100%; } 100% { left:100%; } }
 
   /* raise strip above meta */
-  .services { bottom: 32px; padding-bottom: 1.5rem; }
   .bottom-meta { height: 32px; padding-top: 0; padding-bottom: 0; }
 
   /* ---------- LOADER ---------- */
@@ -509,6 +398,9 @@
   .modal-backdrop.open { opacity: 1; pointer-events: auto; }
   .modal {
     width: min(620px, 92vw);
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     background: #050505;
     border: 1px solid #222;
     padding: 2.4rem 2.4rem 2rem;
@@ -540,6 +432,12 @@
   .modal p {
     font-size: 0.92rem; line-height: 1.75; color: var(--fg-dim); font-weight: 300;
   }
+  .modal .service-detail { margin-top: 1.4rem; }
+  .modal .service-detail h4 {
+    margin-bottom: 0.5rem;
+    font-size: 0.6rem; letter-spacing: 0.2em; font-weight: 400;
+    text-transform: uppercase; color: var(--fg-mute);
+  }
   .modal .tags { margin-top: 1.4rem; display:flex; flex-wrap:wrap; gap: 0.5rem; }
   .modal .tags span {
     font-size: 0.58rem; letter-spacing: 0.3em;
@@ -568,64 +466,12 @@
       width: min(88vw, 420px);
     }
 
-    /* ---- TAGLINE & STATEMENT ---- */
+    /* ---- TAGLINE ---- */
     .tagline {
       font-size: 0.7rem;
       letter-spacing: 0.42em;
       margin-top: 1.6rem;
     }
-    .statement {
-      font-size: 0.82rem;
-      margin-top: 1.8rem;
-      max-width: 82vw;
-      line-height: 1.7;
-    }
-
-    /* ---- CTA ---- */
-    .cta {
-      margin-top: 2rem;
-      font-size: 0.65rem;
-    }
-
-    /* ---- SERVICE STRIP: 2-col grid ---- */
-    .services {
-      grid-template-columns: 1fr 1fr;
-      padding: 0.75rem 1rem 0.75rem;
-      gap: 0;
-    }
-    .svc {
-      padding: 0.85rem 0.9rem 0.6rem;
-      border-left: 1px solid var(--rule);
-      border-top: 1px solid var(--rule);
-    }
-    .svc:nth-child(1),
-    .svc:nth-child(2) {
-      border-top: none;
-    }
-    .svc:nth-child(odd) {
-      border-left: none;
-    }
-    /* 5th item spans full width */
-    .svc:nth-child(5) {
-      grid-column: 1 / -1;
-      border-left: none;
-    }
-    .svc .title {
-      font-size: 0.7rem;
-      letter-spacing: 0.18em;
-      min-height: auto;
-      margin-top: 0.6rem;
-    }
-    .svc .desc {
-      display: none;
-    }
-    .svc .num {
-      font-size: 0.55rem;
-    }
-    .svc .more {
-      display: none;
-    }
-
     /* ---- BOTTOM META ---- */
     .bottom-meta {
       padding: 0.5rem 1rem;
@@ -648,161 +494,12 @@
     .nav { gap: 1.1rem; font-size: 0.62rem; }
     .logo-wrap { width: 92vw; }
     .tagline { font-size: 0.62rem; letter-spacing: 0.34em; }
-    .statement { font-size: 0.76rem; max-width: 90vw; }
-    .services { padding: 0.6rem 0.75rem; }
-    .svc .title { font-size: 0.65rem; }
+    .modal { padding: 2.4rem 1.4rem 1.5rem; }
+    .modal h3 { font-size: 1.1rem; letter-spacing: 0.1em; }
   }
 
-  /* ============================================================
-     MOBILE SERVICES BUTTON + DRAWER
-     Hidden on desktop, shown on mobile
-  ============================================================ */
-  .mob-svc-btn,
-  .mob-svc-drawer,
-  .mob-svc-overlay {
-    display: none;
-  }
-  @media (max-width: 900px) {
-    /* Hide the regular services strip */
-    .services { display: none !important; }
-
-    /* Floating pill button at bottom center */
-    .mob-svc-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: fixed;
-      bottom: 1.6rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 60;
-      padding: 0.75rem 1.5rem;
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 40px;
-      color: #fff;
-      font-family: var(--font);
-      font-size: 0.68rem;
-      letter-spacing: 0.32em;
-      font-weight: 400;
-      cursor: pointer;
-      transition: background .3s ease, border-color .3s ease, transform .3s ease;
-      white-space: nowrap;
-    }
-    .mob-svc-btn:hover,
-    .mob-svc-btn:active {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.35);
-    }
-    .mob-svc-btn.open {
-      transform: translateX(-50%) translateY(4px);
-    }
-    .mob-svc-btn .mob-svc-icon {
-      display: flex;
-      align-items: center;
-      transition: transform .35s cubic-bezier(.2,.7,.2,1);
-    }
-    .mob-svc-btn.open .mob-svc-icon {
-      transform: rotate(180deg);
-    }
-
-    /* Slide-up drawer */
-    .mob-svc-drawer {
-      display: block;
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 70;
-      background: rgba(4,4,4,0.97);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,255,255,0.12);
-      border-radius: 18px 18px 0 0;
-      padding: 0 0 calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
-      transform: translateY(100%);
-      transition: transform .45s cubic-bezier(.2,.7,.2,1);
-      pointer-events: none;
-    }
-    .mob-svc-drawer.open {
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .mob-svc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.2rem 1.5rem 0.8rem;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .mob-svc-title {
-      font-size: 0.65rem;
-      letter-spacing: 0.4em;
-      color: var(--fg-mute);
-      font-weight: 400;
-    }
-    .mob-svc-close {
-      color: var(--fg-dim);
-      display: flex;
-      align-items: center;
-      padding: 4px;
-      transition: color .25s ease;
-    }
-    .mob-svc-close:hover { color: #fff; }
-
-    .mob-svc-list {
-      padding: 0.5rem 0;
-    }
-    .mob-svc-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      cursor: pointer;
-      transition: background .25s ease;
-    }
-    .mob-svc-item:last-child { border-bottom: none; }
-    .mob-svc-item:active { background: rgba(255,255,255,0.04); }
-    .mob-svc-item-left { display: flex; flex-direction: column; gap: 0.3rem; }
-    .mob-svc-item-num {
-      font-size: 0.55rem;
-      letter-spacing: 0.35em;
-      color: var(--fg-mute);
-    }
-    .mob-svc-item-title {
-      font-size: 0.82rem;
-      letter-spacing: 0.14em;
-      font-weight: 500;
-      color: #fff;
-      text-transform: uppercase;
-    }
-    .mob-svc-item-arrow {
-      color: var(--fg-mute);
-      transition: transform .3s ease, color .3s ease;
-    }
-    .mob-svc-item:active .mob-svc-item-arrow {
-      transform: translateX(4px);
-      color: #fff;
-    }
-
-    /* Overlay behind drawer */
-    .mob-svc-overlay {
-      display: block;
-      position: fixed;
-      inset: 0;
-      z-index: 65;
-      background: rgba(0,0,0,0.5);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .35s ease;
-    }
-    .mob-svc-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  }
 </style>
+<link rel="stylesheet" href="services.css">
 </head>
 <body>
 
@@ -825,44 +522,19 @@
     <div class="logo-wrap" id="logoWrap" style="opacity: 1;">
     </div>
     <div class="tagline">VISUAL ENGINEERING</div>
-    <p class="statement" id="statement">
-      I craft cinematic visual experiences<br>
-      where architecture, automotive<br>
-      and storytelling meet precision and emotion.
-    </p>
-    <button type="button" id="exploreBtn" class="cta enter">
-      <span>EXPLORE SERVICES</span>
-    </button>
   </section>
 
   <!-- service strip -->
-  <section class="services enter" id="services-strip"></section>
+  <section class="services enter" id="services-strip" aria-label="Services">
+    <p class="services-label">CHOOSE YOUR EXPERIENCE</p>
+    <div class="service-options" id="serviceOptions"></div>
+  </section>
 
   <div class="bottom-meta enter">
     <div class="copy">© 2026 · RZHK VISUAL ENGINEERING</div>
-    <div class="scroll"><span>PRECISION IN MOTION</span><span class="line"></span></div>
 
   </div>
 
-  <!-- Mobile services popup button -->
-  <button class="mob-svc-btn enter" id="mobSvcBtn" aria-label="View services">
-    <span class="mob-svc-label">SERVICES</span>
-    <span class="mob-svc-icon">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
-    </span>
-  </button>
-
-  <!-- Mobile services drawer -->
-  <div class="mob-svc-drawer" id="mobSvcDrawer" aria-hidden="true">
-    <div class="mob-svc-header">
-      <span class="mob-svc-title">SERVICES</span>
-      <button class="mob-svc-close" id="mobSvcClose" aria-label="Close services">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-    <div class="mob-svc-list" id="mobSvcList"></div>
-  </div>
-  <div class="mob-svc-overlay" id="mobSvcOverlay"></div>
 </main>
 
 <!-- ================= MODAL ================= -->
@@ -872,9 +544,10 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
     <div class="eyebrow" id="mEyebrow">SERVICE · 01</div>
-    <h3 id="mTitle">ARCHITECTURAL VISUALIZATION</h3>
+    <h3 id="mTitle">INTERACTIVE CONFIGURATORS</h3>
     <div class="rule"></div>
-    <p id="mBody">Designing spaces before they exist.</p>
+    <p id="mBody"></p>
+    <div id="mDetails" hidden></div>
     <div class="tags" id="mTags"></div>
   </div>
 </div>
@@ -885,43 +558,71 @@ const PARALLAX_STRENGTH = 14;
 const VIGNETTE = 0.55;
 
 const SERVICES = [
-  { num: '01', title: 'Architectural\nVisualization',
-    short: 'Designing spaces before they exist.',
-    body:  'Precision-driven imagery for architecture, interiors and real estate. Each frame is calibrated — light, material and atmosphere engineered to represent a space before it is built.',
-    tags: ['EXTERIOR', 'INTERIOR', 'REAL ESTATE', 'CGI'] },
-  { num: '02', title: 'Automotive\nCinematics',
-    short: 'Capturing performance in its purest form.',
-    body:  'High-end visuals built around emotion, speed and surface. From hero shots to full cinematic sequences — studied reflections, engineered lighting, tuned color.',
-    tags: ['HERO STILLS', 'SEQUENCES', 'HDRI', 'GRADING'] },
-  { num: '03', title: 'Visual\nStorytelling',
-    short: 'Telling stories through light, motion and detail.',
-    body:  'Crafting narratives through composition, timing and atmosphere. Every frame serves a purpose — pacing, silence and rhythm treated as design surfaces.',
-    tags: ['DIRECTION', 'COMPOSITION', 'EDIT', 'SOUND'] },
-  { num: '04', title: 'Technical\nDirection',
-    short: 'Precision, realism and technical mastery.',
-    body:  'Bridging creativity and execution. Optimizing pipelines, realism and production workflows so the vision survives contact with the render engine.',
-    tags: ['PIPELINE', 'LOOKDEV', 'SHADER', 'REVIEW'] },
-  { num: '05', title: 'Visual\nEngineering',
-    short: 'Where art direction meets technical execution.',
-    body:  'Building controlled visual systems for consistent, high-end output across series of images, campaigns and long-form cinematic projects.',
-    tags: ['SYSTEMS', 'BRANDING', 'STYLE FRAMES', 'CONSISTENCY'] },
+  { num: '01', title: 'Interactive\nConfigurators',
+    heading: 'Interactive Configurators',
+    short: 'Explore the design. Make it your own.',
+    body: 'Custom interactive applications that let clients explore a product and personalize its appearance in real time. Present exterior and interior details, compare materials and finishes, and switch between available design options within a carefully designed interface.',
+    applications: 'Marine — luxury yachts, commercial ships, tankers and specialist vessels; automotive; private aviation; products.',
+    featuresLabel: 'Features can include',
+    features: '360° exploration, interior views, colour and material selection, component variations, and interactive feature demonstrations.',
+    deliverables: 'A tailored configurator application for sales presentations, showrooms or design reviews.',
+    tags: ['MARINE', 'AUTOMOTIVE', 'PRIVATE AVIATION', 'PRODUCTS'] },
+  { num: '02', title: 'Interactive\nArchitecture',
+    heading: 'Interactive Architectural Experiences',
+    short: 'Explore a place before it is built.',
+    body: 'Interactive architectural presentations that let viewers move around a building, step inside its spaces and discover the project at their own pace. Combine an architectural overview with immersive exploration and guided viewpoints to communicate the design and its surroundings.',
+    applications: 'Residential developments, private homes, commercial buildings, interiors and masterplans.',
+    featuresLabel: 'Features can include',
+    features: 'Orbit navigation, walkthroughs, guided tours, interactive points of interest, material options, and changes to lighting or time of day.',
+    deliverables: 'An interactive architectural application for project presentations, design reviews or property marketing.',
+    tags: ['ARCHITECTURE', 'INTERIORS', 'REAL ESTATE'] },
+  { num: '03', title: 'Cinematic Films\n& Animation',
+    heading: 'Cinematic Films & Animation',
+    short: 'Present design through movement, light and atmosphere.',
+    body: 'Cinematic CG films for automotive, marine and private aviation projects. Created in Unreal Engine, each film combines camera direction, lighting, animation and editing to showcase the subject’s form, details and character.',
+    applications: 'Cars, luxury yachts, commercial and specialist vessels, private jets, and aircraft interiors.',
+    featuresLabel: 'Formats can include',
+    features: 'Launch films, product reveals, exterior and interior sequences, feature demonstrations, and short campaign edits.',
+    deliverables: 'An edited film or series of animations in the agreed delivery formats.',
+    tags: ['AUTOMOTIVE', 'MARINE', 'PRIVATE AVIATION', 'UNREAL ENGINE'] },
 ];
+const serviceCount = String(SERVICES.length).padStart(2, '0');
 
 /* ================= RENDER SERVICES ================= */
 const strip = document.getElementById('services-strip');
-strip.innerHTML = SERVICES.map((s, i) => `
-  <button class="svc" data-idx="${i}">
-    <div class="num">${s.num} / 05</div>
-    <div class="title">${s.title.replace('\n','<br>')}</div>
-    <div class="desc">${s.short}</div>
-    <div class="more">EXPLORE <span>→</span></div>
+document.getElementById('serviceOptions').innerHTML = SERVICES.map((s, i) => `
+  <button class="svc" type="button" data-idx="${i}" aria-haspopup="dialog" aria-label="Explore ${s.heading}">
+    <span class="svc-orbit" aria-hidden="true"><span class="svc-satellite"></span><span class="num">${s.num}</span></span>
+    <span class="title">${s.title.replace('\n','<br>')}</span>
+    <span class="desc">${s.short}</span>
+    <span class="more">EXPLORE <span aria-hidden="true">↗</span></span>
   </button>
 `).join('');
 
-strip.addEventListener('click', (e) => {
-  const btn = e.target.closest('.svc');
-  if (!btn) return;
-  openModal(+btn.dataset.idx);
+strip.addEventListener('click', e => {
+  const button = e.target.closest('.svc');
+  if (button) openModal(Number(button.dataset.idx));
+});
+const serviceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+strip.addEventListener('pointermove', e => {
+  if (e.pointerType === 'touch' || serviceMotion.matches) return;
+  const button = e.target.closest('.svc');
+  if (!button) return;
+  const rect = button.querySelector('.svc-orbit').getBoundingClientRect();
+  let angle = Math.atan2(e.clientY - rect.top - rect.height / 2, e.clientX - rect.left - rect.width / 2) * 180 / Math.PI + 90;
+  const previous = Number(button.dataset.angle || 45);
+  angle = previous + ((angle - previous + 180) % 360 + 360) % 360 - 180;
+  button.dataset.angle = String(angle);
+  button.style.setProperty('--orbit-angle', angle + 'deg');
+});
+strip.addEventListener('keydown', e => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+  const buttons = [...strip.querySelectorAll('.svc')];
+  const index = buttons.indexOf(document.activeElement);
+  if (index < 0) return;
+  e.preventDefault();
+  const next = e.key === 'Home' ? 0 : e.key === 'End' ? buttons.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+  buttons[next].focus();
 });
 
 /* ================= MODAL ================= */
@@ -929,6 +630,7 @@ const modal = document.getElementById('modal');
 const mEye = document.getElementById('mEyebrow');
 const mTitle = document.getElementById('mTitle');
 const mBody = document.getElementById('mBody');
+const mDetails = document.getElementById('mDetails');
 const mTags = document.getElementById('mTags');
 
 let modalTrigger = null;
@@ -941,9 +643,26 @@ function showModal() {
 }
 function openModal(i) {
   const s = SERVICES[i];
-  mEye.textContent = `SERVICE · ${s.num}`;
-  mTitle.textContent = s.title.replace('\n', ' ').toUpperCase();
+  mEye.textContent = `SERVICE · ${s.num} / ${serviceCount}`;
+  mTitle.textContent = s.heading.toUpperCase();
   mBody.textContent = s.body;
+  mDetails.replaceChildren();
+  for (const [label, copy] of [
+    ['Applications', s.applications],
+    [s.featuresLabel, s.features],
+    ['What you receive', s.deliverables]
+  ]) {
+    const section = document.createElement('section');
+    section.className = 'service-detail';
+    const heading = document.createElement('h4');
+    heading.textContent = label;
+    const paragraph = document.createElement('p');
+    paragraph.textContent = copy;
+    section.append(heading, paragraph);
+    mDetails.appendChild(section);
+  }
+  mDetails.hidden = false;
+  modal.querySelector('.modal').scrollTop = 0;
   mTags.innerHTML = s.tags.map(t => `<span>${t}</span>`).join('');
   showModal();
 }
@@ -959,18 +678,15 @@ modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); }
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
 document.getElementById('aboutBtn').addEventListener('click', () => {
+  mDetails.replaceChildren();
+  mDetails.hidden = true;
+  modal.querySelector('.modal').scrollTop = 0;
   mEye.textContent = 'ABOUT';
   mTitle.textContent = 'RZHK · VISUAL ENGINEER';
-  mBody.textContent = 'For many years, I have been creating cinematic visuals where architecture, automotive design and storytelling meet. My strength is combining a precise technical eye with strong art direction—shaping light, materials, composition and motion into images that feel both realistic and emotionally clear. I keep growing with every project, continuously exploring new tools, workflows and creative possibilities to push the quality of my work further.';
-  mTags.innerHTML = '<span>ART DIRECTION</span><span>TECHNICAL PRECISION</span><span>REALISM</span><span>STORYTELLING</span><span>CONTINUOUS GROWTH</span>';
+  mBody.textContent = 'For many years, I have combined art direction and technical precision to create cinematic visual experiences. Today, my work spans interactive configurators, architectural experiences and films for marine, automotive, aviation and product design. Using real-time tools and Unreal Engine, I bring designs to life through light, materials, movement and interaction. My vision is to create experiences that make complex ideas tangible, invite exploration and leave a lasting impression.';
+  mTags.innerHTML = '<span>INTERACTIVE EXPERIENCES</span><span>ARCHITECTURE</span><span>CINEMATIC FILMS</span><span>UNREAL ENGINE</span>';
   showModal();
 });
-function exploreServices() {
-  const mobileButton = document.getElementById('mobSvcBtn');
-  if (getComputedStyle(mobileButton).display !== 'none') mobileButton.click();
-  else openModal(0);
-}
-document.getElementById('exploreBtn').addEventListener('click', exploreServices);
 modal.addEventListener('keydown', e => {
   if (e.key === 'Tab') { e.preventDefault(); document.getElementById('modalClose').focus(); }
 });
@@ -991,8 +707,8 @@ window.addEventListener('mousemove', (e) => {
 function tick() {
   mx += (tmx - mx) * 0.08;
   my += (tmy - my) * 0.08;
-  const dx = (mx - 0.5) * parallaxStrength + (window._gyroOffsetX || 0);
-  const dy = (my - 0.5) * parallaxStrength + (window._gyroOffsetY || 0);
+  const dx = (mx - 0.5) * parallaxStrength;
+  const dy = (my - 0.5) * parallaxStrength;
   centerEl.style.transform = `translate(-50%, -54%) translate3d(${dx * 0.15}px, ${dy * 0.15}px, 0)`;
   requestAnimationFrame(tick);
 }
@@ -1043,22 +759,20 @@ function centerVisibility(x, y) {
   const dy = (y - fieldHeight * 0.5) / (fieldHeight * 0.29);
   return 0.16 + 0.84 * (1 - Math.exp(-(dx * dx + dy * dy) * 1.6));
 }
-function releaseLogoDot(p, rect, now) {
-  if (reducedMotion.matches || now - lastDotRelease < 55 || releasedDots.length >= 64) return false;
+function releaseLogoDot(p, rect, now, impactFragment = false) {
+  if (reducedMotion.matches || (!impactFragment && now - lastDotRelease < 55) || releasedDots.length >= 96) return false;
   const x = rect.left + p.x / dpr, y = rect.top + p.y / dpr;
   const inertia = Math.exp(-Math.max(0, now - mouseMomentum.time) / 120) * 0.16;
-  const gyroVX = globalThis._gyroVelocityX || 0;
-  const gyroVY = globalThis._gyroVelocityY || 0;
   releasedDots.push({
     x: x - fieldWidth * 0.5 + (fieldX - 0.5) * 100,
     y: y - fieldHeight * 0.46 + (fieldY - 0.5) * 65,
-    z: 0, vx: p.vx / dpr * 16 + mouseMomentum.x * inertia + gyroVX * 0.32,
-    vy: p.vy / dpr * 14 + mouseMomentum.y * inertia + gyroVY * 0.32,
+    z: 0, vx: p.vx / dpr * 16 + mouseMomentum.x * inertia,
+    vy: p.vy / dpr * 14 + mouseMomentum.y * inertia,
     size: p.size / dpr, age: 0, target: null, joinedAt: null,
     // Each handoff takes a slightly different route before settling into rain.
     chaosSeed: Math.random() * Math.PI * 2,
-    chaosAmount: 8 + Math.random() * 20,
-    chaosRate: 5.5 + Math.random() * 5
+    chaosAmount: 18 + Math.random() * 26,
+    chaosRate: 2.2 + Math.random() * 2
   });
   lastDotRelease = now;
   return true;
@@ -1107,8 +821,10 @@ function drawField(now) {
   const dt = reducedMotion.matches ? 0 : elapsed;
   c.fillStyle = '#fff';
   for (const stream of rainStreams) {
+    const previousHead = projectRain(stream.x, stream.y, stream.z);
     stream.y += stream.speed * dt;
     const head = projectRain(stream.x, stream.y, stream.z);
+    collideRainWithLogo(stream, previousHead, head, now);
     if (head.y - stream.count * stream.gap * head.scale > h + 30) {
       stream.y = (-h * 0.46 - 40) / head.scale + (fieldY - 0.5) * 65;
     }
@@ -1159,13 +875,63 @@ function drawRainShape(c, x, y, size, square) {
     c.fill();
   }
 }
+// Swept head collisions avoid missing a thin logo row between animation frames.
+// Nearby particles scatter once; their existing springs restore the wordmark.
+let lastRainImpact = 0;
+function collideRainWithLogo(stream, previous, head, now) {
+  if (reducedMotion.matches || !logoStarted || !animStart ||
+      now - animStart < 6500 || now - lastRainImpact < 180 ||
+      now < (stream.impactAfter || 0) || head.scale < 0.32) return;
+  const rect = logoWrap.getBoundingClientRect();
+  const x = head.x - rect.left;
+  const y = head.y - rect.top;
+  const previousY = previous.y - rect.top;
+  if (x < -5 || x > rect.width + 5 || y < -5 || previousY > rect.height + 5) return;
+  let hit = null, best = Infinity;
+  for (const p of particles) {
+    if (now < (p.releaseAfter || 0)) continue;
+    const px = p.x / dpr, py = p.y / dpr;
+    const distance = Math.abs(px - x);
+    if (distance < 4 && py >= previousY - 4 && py <= y + 4 && distance < best) {
+      hit = p; best = distance;
+    }
+  }
+  if (!hit) return;
+  lastRainImpact = now;
+  stream.impactAfter = now + 1400;
+  const hx = hit.x, hy = hit.y;
+  for (const p of particles) {
+    const dx = (p.x - hx) / dpr, dy = (p.y - hy) / dpr;
+    const distance = Math.hypot(dx, dy);
+    // Sparse, independent grains rather than a uniformly displaced patch.
+    if (distance > 15 || (p !== hit && Math.random() > 0.38)) continue;
+    const angle = Math.random() * Math.PI * 2;
+    const impulse = (1.1 + Math.random() * 2.4) * (0.6 + head.scale * 0.4);
+    p.vx = Math.cos(angle) * impulse * dpr;
+    p.vy = (Math.sin(angle) * impulse + 0.8) * dpr;
+    p.scatterUntil = now + 300 + Math.random() * 280;
+    p.recoverUntil = p.scatterUntil + 2200;
+  }
+  // Release a small varied handful; the rest of the impacted grains return home.
+  const fragments = [hit, ...particles.filter(p => p !== hit &&
+    now >= (p.releaseAfter || 0) && now < (p.scatterUntil || 0) &&
+    Math.hypot(p.x - hx, p.y - hy) < 15 * dpr)];
+  const fragmentCount = 3 + Math.floor(Math.random() * 3);
+  for (const p of fragments.slice(0, fragmentCount)) {
+    if (!releaseLogoDot(p, rect, now, true)) break;
+    p.releasedAt = now;
+    p.releaseAfter = now + 3500;
+    p.scatterUntil = 0; p.recoverUntil = 0;
+    p.x = p.ox; p.y = p.oy; p.vx = 0; p.vy = 0;
+  }
+}
 function updateReleasedDot(dot, dt, time) {
   dot.age += dt;
   const chaosSeed = dot.chaosSeed || 0;
   const chaosAmount = dot.chaosAmount || 0;
   const chaosRate = dot.chaosRate || 6;
   // A short, damped drift preserves direction without a forceful launch.
-  if (dot.age < 0.35 || !rainStreams.length) {
+  if (dot.age < 0.55 || !rainStreams.length) {
     const drift = Math.sin(time * chaosRate + chaosSeed) * chaosAmount * 0.45;
     dot.vx += drift * dt;
     dot.vy += Math.cos(time * (chaosRate * 0.8) + chaosSeed) * chaosAmount * 0.18 * dt;
@@ -1194,10 +960,10 @@ function updateReleasedDot(dot, dt, time) {
   }
   // A fading, orbit-like offset breaks up the perfect spring curve. It vanishes
   // before contact, so the dot still reads as joining one exact rain trail.
-  const settle = Math.min(1, (dot.age - 0.35) / 1.25);
+  const settle = Math.min(1, (dot.age - 0.55) / 2.1);
   const chaos = chaosAmount * (1 - settle) * (1 - settle);
   const phase = time * chaosRate + chaosSeed;
-  const aimX = stream.x + Math.sin(phase) * chaos;
+  const aimX = stream.x + (Math.sin(phase) * 0.75 + Math.sin(phase * 1.73 + chaosSeed) * 0.25) * chaos;
   const aimY = targetY + Math.cos(phase * 1.37) * chaos * 0.48;
   dot.vx += ((aimX - dot.x) * 15 - dot.vx * 7.2) * dt;
   dot.vy += ((aimY - dot.y) * 15 + (stream.speed - dot.vy) * 7.2) * dt;
@@ -1320,14 +1086,13 @@ function renderParticles(now) {
   const elapsed = (now - animStart) / 1000;
   const W = logoCanvas.width, H = logoCanvas.height;
   lctx.clearRect(0, 0, W, H);
-  // mouse in canvas space — use gyro position on mobile if available
+  // Mouse interaction remains independent of automatic rain collisions.
   const rect = logoWrap.getBoundingClientRect();
   const canvasRect = logoCanvas.getBoundingClientRect();
   lctx.save();
   lctx.translate((rect.left - canvasRect.left) * dpr, (rect.top - canvasRect.top) * dpr);
-  const isTouchDevice = 'ontouchstart' in window;
-  const rawX = (isTouchDevice && window._gyroLogoX != null) ? window._gyroLogoX : logoMouseX;
-  const rawY = (isTouchDevice && window._gyroLogoY != null) ? window._gyroLogoY : logoMouseY;
+  const rawX = logoMouseX;
+  const rawY = logoMouseY;
   const mxC = (rawX - rect.left) * dpr;
   const myC = (rawY - rect.top) * dpr;
   const repelR = 60 * dpr;
@@ -1353,9 +1118,19 @@ function renderParticles(now) {
       // physics phase
       const dxh = p.ox - p.x;
       const dyh = p.oy - p.y;
-      p.vx += dxh * 0.08;
-      p.vy += dyh * 0.08;
-      if (logoActive || (isTouchDevice && window._gyroLogoX != null)) {
+      const scattering = now < (p.scatterUntil || 0);
+      const recovering = !scattering && now < (p.recoverUntil || 0);
+      if (scattering) {
+        p.vy += 0.018 * dpr;
+      } else if (recovering) {
+        // Ease the change in direction so heavier grains settle without snapping.
+        p.vx += (dxh * 0.035 - p.vx) * 0.18;
+        p.vy += (dyh * 0.035 - p.vy) * 0.18;
+      } else {
+        p.vx += dxh * 0.08;
+        p.vy += dyh * 0.08;
+      }
+      if (logoActive) {
         const dxm = p.x - mxC;
         const dym = p.y - myC;
         const d2 = dxm * dxm + dym * dym;
@@ -1364,11 +1139,8 @@ function renderParticles(now) {
           const f = (1 - d / repelR) * 6 * dpr;
           p.vx += (dxm / d) * f;
           p.vy += (dym / d) * f;
-          const gyroRelease = isTouchDevice && (window._gyroMotion || 0) > 0.12;
-          const releaseDistance = gyroRelease ? 4.5 : 7;
           if (d < repelR * 0.8 && now > (p.releaseAfter || 0)
-              && (!isTouchDevice || gyroRelease)
-              && Math.hypot(p.x - p.ox, p.y - p.oy) > releaseDistance * dpr
+              && Math.hypot(p.x - p.ox, p.y - p.oy) > 7 * dpr
               && releaseLogoDot(p, rect, now)) {
             // Hand off this dot to the rain; its home point quietly reforms.
             p.releasedAt = now;
@@ -1377,8 +1149,8 @@ function renderParticles(now) {
           }
         }
       }
-      p.vx *= 0.82;
-      p.vy *= 0.82;
+      p.vx *= scattering ? 0.95 : 0.82;
+      p.vy *= scattering ? 0.95 : 0.82;
       p.x += p.vx;
       p.y += p.vy;
     }
@@ -1446,7 +1218,6 @@ window.addEventListener('resize', () => {
    PAGE REVEAL SEQUENCE:
    t=4.5s     — logo particles start forming (from initLogo)
    t=5.3s     — tagline fades in with blur-in (0.8s)
-   t=5.5s     — statement fades in with blur-in (0.8s)
    t=6.0s     — backgrounds begin fade in (1.2s)
    t=7.2s     — backgrounds fully visible
    t=7.3s     — rest of page (nav, services, footer) stagger in
@@ -1456,7 +1227,6 @@ window.addEventListener('resize', () => {
   if (loader) loader.style.display = 'none';
 
   var tagEl      = document.querySelector('.tagline');
-  var stmtEl     = document.querySelector('.statement');
   var logoWrapEl = document.getElementById('logoWrap');
 
   // When loader canvas is done (after blur-out), show DOM text and rest of page
@@ -1470,18 +1240,11 @@ window.addEventListener('resize', () => {
     }
     initLogo();
     
-    // Fade in center text (tagline, statement) after logo forms slightly
-    // t=0.8s: tagline appears with blur-in (blur 8px→0px, opacity 0→1)
-    // t=1.0s: statement appears with blur-in (blur 8px→0px, opacity 0→1)
+    // Keep the tagline reveal; the descriptive copy belongs to the intro only.
     setTimeout(() => {
       if (tagEl) tagEl.classList.add('visible');
     }, 800);
-    
-    setTimeout(() => {
-      if (stmtEl) stmtEl.classList.add('visible');
-    }, 1000);
-    
-    
+
     // Fade in rest of page elements (nav, services, footer, cta)
     // t=2.8s: start the playEntry stagger (logo has ~2.5s to settle)
     setTimeout(() => {
@@ -1496,153 +1259,6 @@ document.querySelector('.guides').style.display = 'none';
 
 
 
-/* ================= MOBILE SERVICES DRAWER ================= */
-(function() {
-  const btn     = document.getElementById('mobSvcBtn');
-  const drawer  = document.getElementById('mobSvcDrawer');
-  const overlay = document.getElementById('mobSvcOverlay');
-  const closeBtn= document.getElementById('mobSvcClose');
-  const list    = document.getElementById('mobSvcList');
-  if (!btn) return;
-
-  // Populate drawer list from the same SERVICES data
-  SERVICES.forEach((s, i) => {
-    const item = document.createElement('button');
-    item.type = 'button';
-    item.style.width = '100%';
-    item.style.textAlign = 'left';
-    item.className = 'mob-svc-item';
-    item.innerHTML = `
-      <div class="mob-svc-item-left">
-        <span class="mob-svc-item-num">${s.num}</span>
-        <span class="mob-svc-item-title">${s.title}</span>
-      </div>
-      <span class="mob-svc-item-arrow">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </span>`;
-    item.addEventListener('click', () => {
-      closeDrawer();
-      // Trigger the existing service modal
-      const strip = document.getElementById('services-strip');
-      if (strip) {
-        const svcs = strip.querySelectorAll('.svc');
-        if (svcs[i]) svcs[i].click();
-      }
-    });
-    list.appendChild(item);
-  });
-
-  function openDrawer() {
-    drawer.classList.add('open');
-    overlay.classList.add('open');
-    btn.classList.add('open');
-    drawer.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeDrawer() {
-    drawer.classList.remove('open');
-    overlay.classList.remove('open');
-    btn.classList.remove('open');
-    drawer.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-
-  btn.addEventListener('click', () => {
-    drawer.classList.contains('open') ? closeDrawer() : openDrawer();
-  });
-  closeBtn.addEventListener('click', closeDrawer);
-  overlay.addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && drawer.classList.contains('open')) { closeDrawer(); btn.focus(); }
-  });
-})();
-
-/* ================= GYROSCOPE PARALLAX (mobile) ================= */
-(function() {
-  // Only activate on touch devices with DeviceOrientation support
-  if (!('ontouchstart' in window)) return;
-
-  let gyroX = 0, gyroY = 0;        // smoothed orientation offset
-  let tGyroX = 0, tGyroY = 0;      // target
-  let hasGyro = false;
-  let baseBeta = null, baseGamma = null;
-
-  // Request permission on iOS 13+
-  function startGyro() {
-    if (typeof DeviceOrientationEvent === 'undefined') return;
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      DeviceOrientationEvent.requestPermission()
-        .then(state => { if (state === 'granted') bindGyro(); })
-        .catch(() => {});
-    } else {
-      bindGyro();
-    }
-  }
-
-  function bindGyro() {
-    window.addEventListener('deviceorientation', (e) => {
-      if (e.beta == null || e.gamma == null) return;
-      if (!hasGyro) {
-        // Capture baseline on first reading
-        baseBeta  = e.beta  || 0;
-        baseGamma = e.gamma || 0;
-        hasGyro = true;
-        return;
-      }
-      // delta from baseline, clamped to ±30°
-      const db = Math.max(-30, Math.min(30, (e.beta  || 0) - baseBeta));
-      const dg = Math.max(-30, Math.min(30, (e.gamma || 0) - baseGamma));
-      // Map ±30° → ±strength px
-      const strength = 18;
-      tGyroX =  (dg / 30) * strength;  // tilt left/right → X
-      tGyroY =  (db / 30) * strength;  // tilt forward/back → Y
-    }, true);
-
-    // Smooth tilt into a subtle physical logo shift. Motion speed also controls
-    // whether disturbed logo particles are allowed to leave for the rain field.
-    let lastFrame = performance.now();
-    function gyroTick() {
-      const now = performance.now();
-      const dt = Math.max(1 / 120, Math.min(0.05, (now - lastFrame) / 1000));
-      lastFrame = now;
-      const prevX = gyroX, prevY = gyroY;
-      gyroX += (tGyroX - gyroX) * 0.06;
-      gyroY += (tGyroY - gyroY) * 0.06;
-      if (hasGyro) {
-        window._gyroOffsetX = gyroX;
-        window._gyroOffsetY = gyroY;
-        window._gyroVelocityX = (gyroX - prevX) / dt;
-        window._gyroVelocityY = (gyroY - prevY) / dt;
-        const instantMotion = Math.hypot(gyroX - prevX, gyroY - prevY);
-        window._gyroMotion = Math.max(instantMotion, (window._gyroMotion || 0) * 0.9);
-        logoWrap.style.transform = `translate3d(${gyroX * 0.58}px, ${gyroY * 0.58}px, 0)`;
-      }
-
-      requestAnimationFrame(gyroTick);
-    }
-    requestAnimationFrame(gyroTick);
-
-    // Also drive particle repulsion via synthetic mouse position
-    const logoCanvas = document.getElementById('logoCanvas');
-    if (logoCanvas) {
-      function updateLogoGyro() {
-        if (!hasGyro) { requestAnimationFrame(updateLogoGyro); return; }
-        const rect = logoWrap.getBoundingClientRect();
-        // Map gyro offset to a point within the canvas
-        window._gyroLogoX = rect.left + rect.width  * 0.5 + gyroX * 2.6;
-        window._gyroLogoY = rect.top  + rect.height * 0.5 + gyroY * 2.6;
-        requestAnimationFrame(updateLogoGyro);
-      }
-      requestAnimationFrame(updateLogoGyro);
-    }
-  }
-
-  // Trigger on first touch (needed for iOS permission flow)
-  document.addEventListener('touchstart', function onFirst() {
-    document.removeEventListener('touchstart', onFirst);
-    startGyro();
-  }, { once: true });
-})();
 </script>
 </body>
 </html>
