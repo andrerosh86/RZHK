@@ -5,13 +5,13 @@ const html = fs.readFileSync('website/index.html', 'utf8');
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 scripts.forEach(s => new vm.Script(s));
 // Pin the full rain/logo engine recovered from production, including its constants
-// and event handlers. Layout and service edits must not retune this reference effect.
+// and event handlers. Letter-shaped light uses the live logo canvas; particle physics stay unchanged.
 const animationStart=html.indexOf('/* ================= PARTICLE LOGO ================= */');
 const animationEnd=html.indexOf('/* ================= LOADER =================',animationStart);
 const animation=html.slice(animationStart,animationEnd).replace(/\r\n/g,'\n');
 assert.equal(require('crypto').createHash('sha256').update(animation).digest('hex'),
- 'a8547cdf2351dc9ff72fae108db46e03520627436393d5f62e297aaaf7dab548',
- 'Rain/logo engine must match the live Vercel reference (6 September 2026 deployment)');
+ '68896f0e5c03542ace7d84485fba732d53136da5cd3569d518dd136f489f4a0c',
+ 'Rain/logo engine must preserve the reference physics and delayed rain reveal');
 const grains=[];
 for(let x=100;x<=160;x+=5)for(let y=15;y<=45;y+=5)grains.push({x,y,ox:x,oy:y,vx:0,vy:0});
 const distant={x:350,y:30,ox:350,oy:30,vx:0,vy:0};grains.push(distant);
@@ -73,6 +73,7 @@ const render = scripts[1].match(/function renderParticles\(now\) \{[\s\S]*?\n\}/
 const draws = [];
 let offset = [0, 0];
 const particleContext = {
+  motionField:{classList:{contains:()=>true}}, startField(){},
   reducedMotion:{matches:false},
   animStart: 1, dpr: 2, logoFrame: null,
   logoCanvas: {width: 2400, height: 1600, getBoundingClientRect: () => ({left: 0, top: 0})},

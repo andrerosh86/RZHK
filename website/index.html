@@ -508,6 +508,7 @@
 
 <!-- ================= STAGE ================= -->
 <main class="stage" id="stage">
+  <canvas id="logoLight" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:blur(1.5px);mix-blend-mode:screen"></canvas>
   <canvas class="motion-field" id="motionField" aria-hidden="true"></canvas>
   <canvas class="logo-canvas" id="logoCanvas" aria-label="RZHK"></canvas>
   <div class="seam"></div>
@@ -554,7 +555,6 @@
 
 <script>
 /* ================= DATA ================= */
-const PARALLAX_STRENGTH = 14;
 const VIGNETTE = 0.55;
 
 const SERVICES = [
@@ -590,30 +590,19 @@ const serviceCount = String(SERVICES.length).padStart(2, '0');
 
 /* ================= RENDER SERVICES ================= */
 const strip = document.getElementById('services-strip');
+// Solar linear icons, CC BY 4.0: https://icon-sets.iconify.design/solar/
+const SERVICE_ICONS = ["<svg class=\"service-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-width=\"1.5\"><path d=\"M17.5777 4.43152L15.5777 3.38197C13.8221 2.46066 12.9443 2 12 2C11.0557 2 10.1779 2.46066 8.42229 3.38197L6.42229 4.43152C4.27063 5.56066 3.19479 6.12523 2.5974 7.13974C2 8.15425 2 9.41667 2 11.9415V12.0585C2 14.5833 2 15.8458 2.5974 16.8603C3.19479 17.8748 4.27063 18.4393 6.42229 19.5685L8.42229 20.618C10.1779 21.5393 11.0557 22 12 22C12.9443 22 13.8221 21.5393 15.5777 20.618L17.5777 19.5685C19.7294 18.4393 20.8052 17.8748 21.4026 16.8603C22 15.8458 22 14.5833 22 12.0585V11.9415C22 9.41667 22 8.15425 21.4026 7.13974C20.8052 6.12523 19.7294 5.56066 17.5777 4.43152Z\"/><path d=\"M21 7.5L12 12M12 12L3 7.5M12 12V21.5\"/></g></svg>","<svg class=\"service-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-width=\"1.5\"><path d=\"M22 22L2 22\"/><path d=\"M17 22V6C17 4.11438 17 3.17157 16.4142 2.58579C15.8284 2 14.8856 2 13 2H11C9.11438 2 8.17157 2 7.58579 2.58579C7 3.17157 7 4.11438 7 6V22\"/><path d=\"M21 22V8.5C21 7.09554 21 6.39331 20.6629 5.88886C20.517 5.67048 20.3295 5.48298 20.1111 5.33706C19.6067 5 18.9045 5 17.5 5\"/><path d=\"M3 22V8.5C3 7.09554 3 6.39331 3.33706 5.88886C3.48298 5.67048 3.67048 5.48298 3.88886 5.33706C4.39331 5 5.09554 5 6.5 5\"/><path d=\"M12 22V19\"/><path d=\"M10 12H14\"/><path d=\"M5.5 11H7\"/><path d=\"M5.5 14H7\"/><path d=\"M17 11H18.5\"/><path d=\"M17 14H18.5\"/><path d=\"M5.5 8H7\"/><path d=\"M17 8H18.5\"/><path d=\"M10 15H14\"/><circle cx=\"12\" cy=\"7\" r=\"2\"/></g></svg>","<svg class=\"service-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-width=\"1.5\"><path d=\"M12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22Z\"/><path d=\"M21.5 8H2.5\"/><path d=\"M7 8L10.5 2.5\"/><path d=\"M13.5 8L17 2.5\"/><path d=\"M13.014 12.5852C14.338 13.4395 15 13.8666 15 14.5C15 15.1334 14.338 15.5605 13.014 16.4148C11.6719 17.2807 11.0008 17.7137 10.5004 17.3958C10 17.0779 10 16.2186 10 14.5C10 12.7814 10 11.9221 10.5004 11.6042C11.0008 11.2863 11.6719 11.7193 13.014 12.5852Z\"/></g></svg>"];
 document.getElementById('serviceOptions').innerHTML = SERVICES.map((s, i) => `
   <button class="svc" type="button" data-idx="${i}" aria-haspopup="dialog" aria-label="Explore ${s.heading}">
-    <span class="svc-orbit" aria-hidden="true"><span class="svc-satellite"></span><span class="num">${s.num}</span></span>
+    <span class="svc-orbit" aria-hidden="true">${SERVICE_ICONS[i]}</span>
     <span class="title">${s.title.replace('\n','<br>')}</span>
     <span class="desc">${s.short}</span>
-    <span class="more">EXPLORE <span aria-hidden="true">↗</span></span>
   </button>
 `).join('');
 
 strip.addEventListener('click', e => {
   const button = e.target.closest('.svc');
   if (button) openModal(Number(button.dataset.idx));
-});
-const serviceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-strip.addEventListener('pointermove', e => {
-  if (e.pointerType === 'touch' || serviceMotion.matches) return;
-  const button = e.target.closest('.svc');
-  if (!button) return;
-  const rect = button.querySelector('.svc-orbit').getBoundingClientRect();
-  let angle = Math.atan2(e.clientY - rect.top - rect.height / 2, e.clientX - rect.left - rect.width / 2) * 180 / Math.PI + 90;
-  const previous = Number(button.dataset.angle || 45);
-  angle = previous + ((angle - previous + 180) % 360 + 360) % 360 - 180;
-  button.dataset.angle = String(angle);
-  button.style.setProperty('--orbit-angle', angle + 'deg');
 });
 strip.addEventListener('keydown', e => {
   if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
@@ -690,29 +679,15 @@ document.getElementById('aboutBtn').addEventListener('click', () => {
 modal.addEventListener('keydown', e => {
   if (e.key === 'Tab') { e.preventDefault(); document.getElementById('modalClose').focus(); }
 });
-/* ================= PARALLAX ================= */
+/* ================= FIXED LOGO LAYOUT ================= */
 const stage = document.getElementById('stage');
 const centerEl = document.getElementById('center');
-
-let mx = 0.5, my = 0.5, tmx = 0.5, tmy = 0.5;
-let parallaxStrength = PARALLAX_STRENGTH;
-
-window.addEventListener('mousemove', (e) => {
-  tmx = e.clientX / window.innerWidth;
-  tmy = e.clientY / window.innerHeight;
-  // side hover hint
-  stage.dataset.hover = tmx < 0.5 ? 'left' : 'right';
+centerEl.style.transform = 'translate(-50%, -54%)';
+let tmx=.5,tmy=.5;
+window.addEventListener('mousemove',e=>{
+  tmx=e.clientX/innerWidth;tmy=e.clientY/innerHeight;
+  stage.dataset.hover=tmx<.5?'left':'right';
 });
-
-function tick() {
-  mx += (tmx - mx) * 0.08;
-  my += (tmy - my) * 0.08;
-  const dx = (mx - 0.5) * parallaxStrength;
-  const dy = (my - 0.5) * parallaxStrength;
-  centerEl.style.transform = `translate(-50%, -54%) translate3d(${dx * 0.15}px, ${dy * 0.15}px, 0)`;
-  requestAnimationFrame(tick);
-}
-requestAnimationFrame(tick);
 
 /* ================= ENTRY ================= */
 function playEntry() {
@@ -790,7 +765,7 @@ function resizeField() {
     return {
       x: (Math.random() - 0.5) * (fieldWidth + 180) / scale,
       y: (Math.random() - 0.5) * fieldHeight * 2 / scale,
-      z, speed: 95 + Math.random() * 125,
+      z, absorbed: [], speed: 95 + Math.random() * 125,
       count: 42 + Math.floor(Math.random() * 38),
       gap: 4.6 + Math.random() * 5.2,
       seed: Math.random() * 1000,
@@ -801,15 +776,30 @@ function resizeField() {
   }).sort((a, b) => b.z - a.z);
   releasedDots.length = 0;
 }
+// Original monochrome light treatment inspired by the depth and soft points at
+// https://www.sztanki.com/ — visual reference only; no source or assets reused.
+// One cached sprite keeps the glow inexpensive and the particle cores crisp.
+const rainGlow = document.createElement('canvas');
+rainGlow.width = rainGlow.height = 48;
+const rainGlowContext = rainGlow.getContext('2d');
+const rainGlowGradient = rainGlowContext.createRadialGradient(24,24,0,24,24,24);
+rainGlowGradient.addColorStop(0, 'rgba(255,255,255,.55)');
+rainGlowGradient.addColorStop(.16, 'rgba(240,246,255,.20)');
+rainGlowGradient.addColorStop(.45, 'rgba(235,243,255,.045)');
+rainGlowGradient.addColorStop(1, 'rgba(235,243,255,0)');
+rainGlowContext.fillStyle = rainGlowGradient;
+rainGlowContext.fillRect(0,0,48,48);
+
 function drawField(now) {
   fieldFrame = null;
-  if (document.hidden) return;
+  if (document.hidden || !motionField.classList.contains('visible')) return;
   const elapsed = fieldLast ? Math.min((now - fieldLast) / 1000, 0.05) : 0;
   if (!reducedMotion.matches && elapsed < 1 / 30 && fieldLast) {
     fieldFrame = requestAnimationFrame(drawField);
     return;
   }
   fieldLast = now;
+  window.rainInteraction?.begin(now, elapsed);
   if (!reducedMotion.matches) fieldTime += elapsed;
   const t = fieldTime;
   // Keep the rain fixed in the page while the logo alone responds to mouse movement.
@@ -822,14 +812,24 @@ function drawField(now) {
   c.fillStyle = '#fff';
   for (const stream of rainStreams) {
     const previousHead = projectRain(stream.x, stream.y, stream.z);
-    stream.y += stream.speed * dt;
+    const previousStreamY = stream.y;
+    const travel = reducedMotion.matches ? 0 : stream.speed * elapsed;
+    stream.y += travel;
     const head = projectRain(stream.x, stream.y, stream.z);
     collideRainWithLogo(stream, previousHead, head, now);
+    let wrapped = false;
     if (head.y - stream.count * stream.gap * head.scale > h + 30) {
       stream.y = (-h * 0.46 - 40) / head.scale + (fieldY - 0.5) * 65;
+      wrapped = true;
     }
+    if (wrapped) stream.absorbed.length = 0;
     for (let j = 0; j < stream.count; j++) {
       const point = projectRain(stream.x, stream.y - j * stream.gap, stream.z);
+      if (stream.absorbed[j]) continue;
+      const previousY = wrapped ? point.y : point.y - (stream.y - previousStreamY) * point.scale;
+      if (window.rainInteraction?.absorb(point.x, previousY, point.y, 0.72 + point.scale * 1.08)) {
+        stream.absorbed[j] = true; continue;
+      }
       if (point.y < -4 || point.y > h + 4) continue;
       const tail = (1 - j / stream.count) ** 1.6;
       // Random round/square changes provide the changing-character rhythm.
@@ -837,17 +837,30 @@ function drawField(now) {
       const noise = Math.abs(Math.sin(stream.seed * 12.9898 + j * 78.233 + change * 37.719));
       const pulseAt = (t * stream.pulseSpeed + stream.pulseOffset) % (stream.count + 8) - 4;
       const pulse = Math.exp(-Math.pow(j - pulseAt, 2) / 2.8);
-      const brightness = Math.min(1, 0.65 + pulse * 0.25 + (j === 0 ? 0.1 : 0));
+      const shimmer = .9 + .1 * Math.sin(t * 1.25 + stream.seed + j * .37);
+      const brightness = Math.min(1, (0.65 + pulse * 0.25 + (j === 0 ? 0.1 : 0)) * shimmer);
       c.globalAlpha = (0.27 + point.scale * 0.52) * tail * brightness * centerVisibility(point.x, point.y);
       const size = 0.72 + point.scale * 1.08;
+      // Sparse near-plane highlights; the original paths and hit tests stay intact.
+      if (point.scale > .4 && (j === 0 || pulse > .65)) {
+        const alpha = c.globalAlpha;
+        const glowSize = 8 + point.scale * 12;
+        c.globalAlpha = alpha * (j === 0 ? .8 : pulse * .5);
+        c.drawImage(rainGlow, point.x + size/2 - glowSize/2, point.y + size/2 - glowSize/2, glowSize, glowSize);
+        c.globalAlpha = alpha;
+      }
       drawRainShape(c, point.x, point.y, size, noise > 0.5);
     }
   }
   // Launch freely, catch a moving stream dot, then accent the completed merge.
   for (let i = releasedDots.length - 1; i >= 0; i--) {
     const dot = releasedDots[i];
+    const previousPoint = projectRain(dot.x, dot.y, dot.z);
     updateReleasedDot(dot, dt, t);
     const point = projectRain(dot.x, dot.y, dot.z);
+    if (window.rainInteraction?.absorb(point.x, previousPoint.y, point.y, dot.size * point.scale)) {
+      releasedDots.splice(i, 1); continue;
+    }
     const fade = Math.max(0, 1 - dot.age / 8);
     const merge = Math.min(1, dot.age / 2.5);
     const visibility = 1 - merge + merge * centerVisibility(point.x, point.y);
@@ -865,6 +878,7 @@ function drawField(now) {
     if (dot.age > 8 || point.y > h + 20 || (dot.joinedAt != null && t - dot.joinedAt >= 0.5)) releasedDots.splice(i, 1);
   }
   c.globalAlpha = 1;
+  window.rainInteraction?.finish(now);
   if (!reducedMotion.matches) fieldFrame = requestAnimationFrame(drawField);
 }
 function drawRainShape(c, x, y, size, square) {
@@ -1093,8 +1107,7 @@ function renderParticles(now) {
   lctx.translate((rect.left - canvasRect.left) * dpr, (rect.top - canvasRect.top) * dpr);
   const rawX = logoMouseX;
   const rawY = logoMouseY;
-  const mxC = (rawX - rect.left) * dpr;
-  const myC = (rawY - rect.top) * dpr;
+  const mxC = (rawX - rect.left) * dpr, myC = (rawY - rect.top) * dpr;
   const repelR = 60 * dpr;
   const repelR2 = repelR * repelR;
 
@@ -1162,6 +1175,13 @@ function renderParticles(now) {
   }
   lctx.globalAlpha = 1;
   lctx.restore();
+  // Reveal the rain only after the last delayed logo particle finishes forming.
+  if (!motionField.classList.contains('visible') && particles.length &&
+      particles.every(p => elapsed >= p.delay + p.duration)) {
+    motionField.classList.add('visible');
+    startField();
+  }
+  window.logoLight?.render(now, logoCanvas, rect, dpr, motionField.classList.contains('visible'));
   logoFrame = requestAnimationFrame(renderParticles);
 }
 
@@ -1232,7 +1252,6 @@ window.addEventListener('resize', () => {
   // When loader canvas is done (after blur-out), show DOM text and rest of page
   window._loaderDone = function() {
     if (logoStarted) return;
-    motionField.classList.add('visible');
     // Start logo particles immediately
     if (logoWrapEl) {
       logoWrapEl.style.opacity = '1';
@@ -1260,6 +1279,9 @@ document.querySelector('.guides').style.display = 'none';
 
 
 </script>
+<canvas id="serviceSparks" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:36"></canvas>
+<script src="rain-interaction.js"></script>
+<script src="logo-light.js"></script>
 </body>
 </html>
 

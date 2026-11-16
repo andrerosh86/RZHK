@@ -47,6 +47,7 @@
   height: 104px;
   margin-bottom: 22px;
   border: 1px solid #454545;
+  background: #000;
   border-radius: 50%;
   transition: border-color .35s ease, transform .45s ease, box-shadow .45s ease;
 }
@@ -58,26 +59,7 @@
   border-radius: inherit;
   transition: border-color .35s ease;
 }
-.svc-satellite {
-  position: absolute;
-  inset: -1px;
-  border-radius: 50%;
-  animation: service-orbit 24s linear infinite;
-}
-.svc:nth-child(2) .svc-satellite { animation-delay: -8s; }
-.svc:nth-child(3) .svc-satellite { animation-delay: -16s; }
-.svc-satellite::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: calc(50% - 2px);
-  width: 4px;
-  height: 4px;
-  background: #ddd;
-  border-radius: 50%;
-  box-shadow: 0 0 9px #ffffff50;
-}
-.svc .num { color: #eee; font-size: 27px; font-weight: 300; letter-spacing: .02em; }
+.service-icon { width: 34%; height: 34%; color: #dededb; position: relative; z-index: 1; }
 .svc .title {
   min-height: 2.9em;
   font-size: 14px;
@@ -118,18 +100,13 @@
   box-shadow: 0 0 35px #ffffff0c;
 }
 .svc:is(:hover, :focus-visible) .svc-orbit::before { border-color: #555; }
-.svc:is(:hover, :focus-visible) .svc-satellite {
-  animation: none;
-  transform: rotate(var(--orbit-angle, 45deg));
-  transition: transform .12s ease-out;
-}
+
 .svc:is(:hover, :focus-visible) .more { color: #fff; }
 .svc:is(:hover, :focus-visible) .more span { transform: translate(3px, -3px); }
 .svc:active .svc-orbit { transform: scale(.97); }
 @media (hover: hover) {
   .svc:hover { transform: translateY(-6px); }
 }
-@keyframes service-orbit { to { transform: rotate(360deg); } }
 
 /* Reserve distinct vertical space for the logo and the service controls. */
 .center { top: 45%; }
@@ -159,7 +136,6 @@
   .services-label { font-size: 8px; letter-spacing: .2em; margin-bottom: 24px; }
   .service-options { gap: 2px; }
   .svc-orbit { width: 68px; height: 68px; }
-  .svc .num { font-size: 21px; }
   .svc .title { min-height: 4.95em; font-size: 9px; line-height: 1.65; letter-spacing: .1em; }
   .svc .desc { display: none; }
   .svc .more { font-size: 8px; letter-spacing: .08em; margin-top: 12px; }
@@ -173,7 +149,6 @@
   .services-label { margin-bottom: 10px; font-size: 8px; }
   .svc-orbit { width: 48px; height: 48px; margin-bottom: 12px; }
   .svc-orbit::before { inset: 5px; }
-  .svc .num { font-size: 17px; }
   .svc .title { font-size: 10px; }
   .svc .desc { display: none; }
   .svc .more { margin-top: 8px; font-size: 8px; }
