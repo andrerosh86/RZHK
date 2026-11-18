@@ -508,14 +508,14 @@
 
 <!-- ================= STAGE ================= -->
 <main class="stage" id="stage">
-  <canvas id="logoLight" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:blur(1.5px);mix-blend-mode:screen"></canvas>
+  <canvas id="logoLight" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;filter:blur(1.5px);mix-blend-mode:screen"></canvas>
   <canvas class="motion-field" id="motionField" aria-hidden="true"></canvas>
   <canvas class="logo-canvas" id="logoCanvas" aria-label="RZHK"></canvas>
   <div class="seam"></div>
   <div class="guides"></div>
 
   <nav class="nav enter" aria-label="Primary">
-    <button type="button" id="aboutBtn">ABOUT</button>
+    <button type="button" id="aboutBtn" aria-haspopup="dialog" aria-controls="modal" aria-expanded="false">ABOUT</button>
   </nav>
 
   <!-- center -->
@@ -526,15 +526,16 @@
   </section>
 
   <!-- service strip -->
-  <section class="services enter" id="services-strip" aria-label="Services">
-    <p class="services-label">CHOOSE YOUR EXPERIENCE</p>
+  <section class="services enter" id="services-strip" aria-labelledby="services-heading">
+    <header class="services-header"><p class="services-label">OUR EXPERTISE</p>
+    <h2 id="services-heading">Explore. Experience. Imagine.</h2></header>
     <div class="service-options" id="serviceOptions"></div>
   </section>
 
-  <div class="bottom-meta enter">
+  <footer class="bottom-meta enter">
     <div class="copy">© 2026 · RZHK VISUAL ENGINEERING</div>
 
-  </div>
+  </footer>
 
 </main>
 
@@ -590,15 +591,23 @@ const serviceCount = String(SERVICES.length).padStart(2, '0');
 
 /* ================= RENDER SERVICES ================= */
 const strip = document.getElementById('services-strip');
-// Solar linear icons, CC BY 4.0: https://icon-sets.iconify.design/solar/
-const SERVICE_ICONS = ["<svg class=\"service-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-width=\"1.5\"><path d=\"M17.5777 4.43152L15.5777 3.38197C13.8221 2.46066 12.9443 2 12 2C11.0557 2 10.1779 2.46066 8.42229 3.38197L6.42229 4.43152C4.27063 5.56066 3.19479 6.12523 2.5974 7.13974C2 8.15425 2 9.41667 2 11.9415V12.0585C2 14.5833 2 15.8458 2.5974 16.8603C3.19479 17.8748 4.27063 18.4393 6.42229 19.5685L8.42229 20.618C10.1779 21.5393 11.0557 22 12 22C12.9443 22 13.8221 21.5393 15.5777 20.618L17.5777 19.5685C19.7294 18.4393 20.8052 17.8748 21.4026 16.8603C22 15.8458 22 14.5833 22 12.0585V11.9415C22 9.41667 22 8.15425 21.4026 7.13974C20.8052 6.12523 19.7294 5.56066 17.5777 4.43152Z\"/><path d=\"M21 7.5L12 12M12 12L3 7.5M12 12V21.5\"/></g></svg>","<svg class=\"service-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-width=\"1.5\"><path d=\"M22 22L2 22\"/><path d=\"M17 22V6C17 4.11438 17 3.17157 16.4142 2.58579C15.8284 2 14.8856 2 13 2H11C9.11438 2 8.17157 2 7.58579 2.58579C7 3.17157 7 4.11438 7 6V22\"/><path d=\"M21 22V8.5C21 7.09554 21 6.39331 20.6629 5.88886C20.517 5.67048 20.3295 5.48298 20.1111 5.33706C19.6067 5 18.9045 5 17.5 5\"/><path d=\"M3 22V8.5C3 7.09554 3 6.39331 3.33706 5.88886C3.48298 5.67048 3.67048 5.48298 3.88886 5.33706C4.39331 5 5.09554 5 6.5 5\"/><path d=\"M12 22V19\"/><path d=\"M10 12H14\"/><path d=\"M5.5 11H7\"/><path d=\"M5.5 14H7\"/><path d=\"M17 11H18.5\"/><path d=\"M17 14H18.5\"/><path d=\"M5.5 8H7\"/><path d=\"M17 8H18.5\"/><path d=\"M10 15H14\"/><circle cx=\"12\" cy=\"7\" r=\"2\"/></g></svg>","<svg class=\"service-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-width=\"1.5\"><path d=\"M12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22Z\"/><path d=\"M21.5 8H2.5\"/><path d=\"M7 8L10.5 2.5\"/><path d=\"M13.5 8L17 2.5\"/><path d=\"M13.014 12.5852C14.338 13.4395 15 13.8666 15 14.5C15 15.1334 14.338 15.5605 13.014 16.4148C11.6719 17.2807 11.0008 17.7137 10.5004 17.3958C10 17.0779 10 16.2186 10 14.5C10 12.7814 10 11.9221 10.5004 11.6042C11.0008 11.2863 11.6719 11.7193 13.014 12.5852Z\"/></g></svg>"];
-document.getElementById('serviceOptions').innerHTML = SERVICES.map((s, i) => `
-  <button class="svc" type="button" data-idx="${i}" aria-haspopup="dialog" aria-label="Explore ${s.heading}">
-    <span class="svc-orbit" aria-hidden="true">${SERVICE_ICONS[i]}</span>
-    <span class="title">${s.title.replace('\n','<br>')}</span>
-    <span class="desc">${s.short}</span>
-  </button>
-`).join('');
+const SERVICE_PREVIEWS = [
+  {image:'automotive',alt:'Automotive concept: graphite grand tourer in a dark studio',description:'Every option. In your hands.',link:'EXPLORE CONFIGURATORS'},
+  {image:'architecture',alt:'Architectural concept: glass-fronted coastal home at dusk',description:'Step inside before it exists.',link:'EXPLORE SPACES'},
+  {image:'storytelling',alt:'Cinematic concept: monumental circular architecture in mist',description:'Design brought to life.',link:'WATCH FILMS'}
+];
+document.getElementById('serviceOptions').innerHTML = SERVICES.map((s, i) => {
+  const p = SERVICE_PREVIEWS[i];
+  return `<article class="service-card" aria-labelledby="service-title-${i}">
+    <button class="svc service-preview" type="button" data-idx="${i}" aria-haspopup="dialog" aria-label="Explore ${s.heading}">
+      <img src="media/${p.image}-640.webp" srcset="media/${p.image}-640.webp 640w, media/${p.image}-1280.webp 1280w" sizes="(max-width: 700px) calc(100vw - 48px), (max-width: 1000px) 29vw, 28vw" width="1536" height="1024" alt="${p.alt}" loading="eager" decoding="async">
+    </button>
+    <p class="service-number">${s.num}</p>
+    <h3 class="service-title" id="service-title-${i}">${s.title.split('\n').map(line=>'<span>'+line+'</span>').join('')}</h3>
+    <p class="service-description">${p.description}</p>
+    <button class="svc service-link" type="button" data-idx="${i}" aria-haspopup="dialog">${p.link} <span aria-hidden="true">↗</span></button>
+  </article>`;
+}).join('');
 
 strip.addEventListener('click', e => {
   const button = e.target.closest('.svc');
@@ -628,9 +637,11 @@ function showModal() {
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
   document.getElementById("stage").inert = true;
+  document.body.classList.add("modal-open");
   document.getElementById("modalClose").focus();
 }
 function openModal(i) {
+  modal.classList.remove('about-mode');
   const s = SERVICES[i];
   mEye.textContent = `SERVICE · ${s.num} / ${serviceCount}`;
   mTitle.textContent = s.heading.toUpperCase();
@@ -658,22 +669,28 @@ function openModal(i) {
 function closeModal() {
   if (!modal.classList.contains('open')) return;
   document.getElementById('stage').inert = false;
+  document.body.classList.remove('modal-open');
   modal.classList.remove('open');
   modal.setAttribute('aria-hidden', 'true');
-  if (modalTrigger) modalTrigger.focus();
+  document.getElementById('aboutBtn').setAttribute('aria-expanded', 'false');
+  if (modalTrigger) modalTrigger.focus({preventScroll:true});
 }
 document.getElementById('modalClose').addEventListener('click', closeModal);
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
 document.getElementById('aboutBtn').addEventListener('click', () => {
+  modal.classList.add('about-mode');
+  document.getElementById('aboutBtn').setAttribute('aria-expanded', 'true');
   mDetails.replaceChildren();
   mDetails.hidden = true;
   modal.querySelector('.modal').scrollTop = 0;
   mEye.textContent = 'ABOUT';
-  mTitle.textContent = 'RZHK · VISUAL ENGINEER';
-  mBody.textContent = 'For many years, I have combined art direction and technical precision to create cinematic visual experiences. Today, my work spans interactive configurators, architectural experiences and films for marine, automotive, aviation and product design. Using real-time tools and Unreal Engine, I bring designs to life through light, materials, movement and interaction. My vision is to create experiences that make complex ideas tangible, invite exploration and leave a lasting impression.';
-  mTags.innerHTML = '<span>INTERACTIVE EXPERIENCES</span><span>ARCHITECTURE</span><span>CINEMATIC FILMS</span><span>UNREAL ENGINE</span>';
+  mTitle.textContent = 'Art meets precision.';
+  mBody.textContent = 'I create interactive experiences and cinematic films that bring design to life through light, materials, and movement.';
+  mTags.replaceChildren();
+  // Establish the collapsed notch before transitioning into the open panel.
+  void modal.offsetWidth;
   showModal();
 });
 modal.addEventListener('keydown', e => {
@@ -682,7 +699,7 @@ modal.addEventListener('keydown', e => {
 /* ================= FIXED LOGO LAYOUT ================= */
 const stage = document.getElementById('stage');
 const centerEl = document.getElementById('center');
-centerEl.style.transform = 'translate(-50%, -54%)';
+// The hero now occupies its own row above the expanded Services section.
 let tmx=.5,tmy=.5;
 window.addEventListener('mousemove',e=>{
   tmx=e.clientX/innerWidth;tmy=e.clientY/innerHeight;
@@ -1279,8 +1296,6 @@ document.querySelector('.guides').style.display = 'none';
 
 
 </script>
-<canvas id="serviceSparks" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:36"></canvas>
-<script src="rain-interaction.js"></script>
 <script src="logo-light.js"></script>
 </body>
 </html>

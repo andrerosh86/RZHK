@@ -22,7 +22,7 @@
   window.addEventListener('pagehide',clear);
   window.logoLight = {
     render(now, logo, rect, dpr, ready) {
-      if(document.hidden || reduce.matches || !ready) {clear();return;}
+      if(document.hidden || reduce.matches || !ready || rect.bottom < 0 || rect.top > innerHeight) {clear();return;}
       if(last && now-last<33) return;
       const dt=last?Math.min((now-last)/1000,.06):1/30;last=now;
       if(width!==innerWidth || height!==innerHeight) {
